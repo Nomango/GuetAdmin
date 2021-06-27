@@ -4,6 +4,11 @@ const chalk = require('chalk')
 const path = require('path')
 const Mock = require('mockjs')
 
+// cookie丢失的问题
+if (Mock.XHR && Mock.XHR.prototype) {
+  Mock.XHR.prototype.withCredentials = true
+}
+
 const mockDir = path.join(process.cwd(), 'mock')
 
 function registerRoutes(app) {
