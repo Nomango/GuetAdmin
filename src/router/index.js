@@ -37,15 +37,15 @@ export const constantRoutes = [
   },
 
   {
-    path: '/',
+    path: "/",
     component: Layout,
-    redirect: '/home',
+    redirect: "/home",
     children: [
       {
-        path: 'home',
-        component: () => import('@/views/Home'),
-        name: 'Home',
-        meta: { title: '概览', icon: 'dashboard', affix: true }
+        path: "home",
+        component: () => import("@/views/Home"),
+        name: "Home",
+        meta: { title: "概览", icon: "dashboard", affix: true }
       }
     ]
   },
@@ -73,33 +73,42 @@ export const constantRoutes = [
   },
 
   {
-    path: "/form",
-    component: Layout,
-    children: [
-      {
-        path: "index",
-        name: "Form",
-        component: () => import("@/views/form/index"),
-        meta: { title: "Form", icon: "form" }
-      }
-    ]
-  },
-
-  {
     path: "/graduation-management",
     component: Layout,
-    redirect: "/graduation-management/project-list",
+    redirect: "/graduation-management/list",
     name: "GraduationManagement",
     meta: {
       title: "毕设管理",
-      icon: "nested"
+      icon: "list"
     },
     children: [
       {
-        path: "project-list",
-        component: () => import("@/views/GraduationProject/ProjectList"),
+        path: "list",
+        component: () => import("@/views/GraduationProject/ProjectList/index"),
         name: "ProjectList",
         meta: { title: "毕设列表" }
+      },
+      {
+        path: "create",
+        component: () => import("@/views/GraduationProject/ProjectList/create"),
+        name: "CreateProject",
+        meta: {
+          title: "创建毕设",
+          noCache: true,
+          activeMenu: "/graduation-management/list"
+        },
+        hidden: true
+      },
+      {
+        path: "edit/:id(\\d+)",
+        component: () => import("@/views/GraduationProject/ProjectList/edit"),
+        name: "EditProject",
+        meta: {
+          title: "编辑毕设",
+          noCache: true,
+          activeMenu: "/graduation-management/list"
+        },
+        hidden: true
       },
       {
         path: "rating-management",

@@ -8,6 +8,14 @@ export function getCollegeList(params) {
   });
 }
 
+export function addCollegeList(body) {
+  return request({
+    url: "/api/admin/school/add",
+    method: "post",
+    body
+  });
+}
+
 export function getMentorList(params) {
   return request({
     url: "/api/admin/teacher",
@@ -27,7 +35,7 @@ export function addMentorList(body) {
 export function updateMentorList(body) {
   return request({
     url: "/api/admin/teacher/edit",
-    method: "put",
+    method: "post",
     body
   });
 }

@@ -12,12 +12,12 @@
         filterable
         remote
         class="college-select"
-        placeholder="请输入学院名称"
+        placeholder="请输入/选择学院名称"
         :remote-method="handleRemoteMethod"
         :loading="selectLoading"
       >
         <el-option
-          v-for="item in collegeOptions"
+          v-for="item in collegeOptions.target"
           :key="item.value"
           :label="item.label"
           :value="item.value"
@@ -49,7 +49,7 @@
     >
       <el-table-column
         prop="number"
-        label="number"
+        label="教师工号"
         align="center"
       />
       <el-table-column
@@ -63,7 +63,6 @@
         align="center"
       />
       <el-table-column
-        prop="school"
         label="操作"
         align="center"
       >
@@ -102,7 +101,7 @@
           <el-input
             v-model="temp.number"
             class="mentor-dialog-input"
-            placeholder="请输入 number"
+            placeholder="请输入教师工号"
           />
         </el-form-item>
         <el-form-item label="姓名" prop="name">
@@ -123,7 +122,7 @@
             :loading="selectLoading"
           >
             <el-option
-              v-for="item in dialogCollegeOptions"
+              v-for="item in dialogCollegeOptions.target"
               :key="item.label"
               :label="item.label"
               :value="item.value"
@@ -132,7 +131,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
+        <el-button @click="handleDialogCancel">
           取消
         </el-button>
         <el-button
@@ -160,11 +159,17 @@ export default {
   data() {
     return {
       collegeName: '',
-      collegeOptions: [],
-      dialogCollegeOptions: [],
+      collegeOptions: {
+        origin: [],
+        target: []
+      },
+      dialogCollegeOptions: {
+        origin: [],
+        target: []
+      },
       rules: {
-        name: [{ required: true, message: 'name is required', trigger: 'blur' }],
-        school: [{ required: true, message: 'school is required', trigger: 'change' }]
+        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+        school: [{ required: true, message: '请输入学院名称', trigger: 'change' }]
       },
       currentPage: 1,
       pageSize: 10,
@@ -190,38 +195,38 @@ export default {
   },
 
   created() {
-    this.getList()
+    this.getCollege()
+    this.getMentor()
   },
 
   methods: {
-    getList() {
-      this.listLoading = true
-      Promise.all(
-        [
-          getMentorList({
-            school: this.collegeName,
-            name: this.nameText,
-            page: this.currentPage,
-            pageSize: this.pageSize
-          }),
-          getCollegeList()
-        ]
-      )
-        .then(([mentorRes, collegeRes]) => {
-          const { totalCount, teachers } = mentorRes.data || {}
+    async getCollege() {
+      const res = await getCollegeList()
+      const newOptions = (res.data || []).map(collegeItem => {
+        return {
+          value: collegeItem,
+          label: collegeItem
+        }
+      })
 
-          this.totalCount = totalCount || 0
-          this.tableData = teachers || []
-          const newOptions = (collegeRes.data || []).map(collegeItem => {
-            return {
-              value: collegeItem,
-              label: collegeItem
-            }
-          })
-          this.dialogCollegeOptions = newOptions
-          this.collegeOptions = newOptions
-          this.listLoading = false
-        })
+      this.handleMapDialogCollegeOptions(newOptions)
+      this.handleMapCollegeOptions(newOptions)
+    },
+
+    async getMentor() {
+      this.listLoading = true
+      const res = await getMentorList({
+        school: this.collegeName,
+        name: this.nameText,
+        page: this.currentPage,
+        pageSize: this.pageSize
+      })
+
+      const { totalCount, teachers } = res.data || {}
+
+      this.totalCount = totalCount || 0
+      this.tableData = teachers || []
+      this.listLoading = false
     },
 
     createData() {
@@ -260,41 +265,56 @@ export default {
     },
 
     async handleRemoteMethod(query) {
-      if (query !== '') {
+      if (query !== "") {
         this.selectLoading = true;
         const res = await getCollegeList({
           name: query.trim()
         })
 
-        const collegeListData = res.data || {}
-
         this.selectLoading = false;
-        this.collegeOptions = collegeListData.map(item => ({
-          label: item,
-          value: item
-        }));
+        this.handleMapCollegeOptions(res.data || [], true)
       } else {
-        this.collegeOptions = [];
+        this.collegeOptions.target = this.collegeOptions.origin.slice()
       }
     },
+
     /** 弹窗的学院数据 */
     async handleDialogRemoteMethod(query) {
-      if (query !== '') {
-        this.dialogSelectLoading = true;
+      if (query !== "") {
+        this.selectLoading = true;
         const res = await getCollegeList({
           name: query.trim()
         })
 
-        const collegeListData = res.data || {}
-
-        this.dialogSelectLoading = false;
-        this.dialogCollegeOptions = collegeListData.map(item => ({
-          label: item,
-          value: item
-        }));
+        this.selectLoading = false;
+        this.handleMapDialogCollegeOptions(res.data || [], true)
       } else {
-        this.dialogCollegeOptions = [];
+        this.dialogCollegeOptions.target = this.collegeOptions.origin.slice()
       }
+    },
+
+    handleMapDialogCollegeOptions(data, isSearch) {
+      const newCollegeData = data.map(item => ({
+        label: item,
+        value: item
+      }));
+
+      if (!isSearch) {
+        this.dialogCollegeOptions.origin = newCollegeData
+      }
+      this.dialogCollegeOptions.target = newCollegeData
+    },
+
+    handleMapCollegeOptions(data, isSearch) {
+      const newCollegeData = data.map(item => ({
+        label: item,
+        value: item
+      }));
+
+      if (!isSearch) {
+        this.collegeOptions.origin = newCollegeData
+      }
+      this.collegeOptions.target = newCollegeData
     },
 
     handleFilter() {
@@ -340,6 +360,10 @@ export default {
       this.$nextTick(() => {
         this.getList()
       })
+    },
+
+    handleDialogCancel() {
+      this.dialogFormVisible = false
     },
 
     resetTemp() {

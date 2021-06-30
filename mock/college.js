@@ -6,12 +6,21 @@ module.exports = [
     type: "get",
     response: (req, res) => {
       return {
-        "code": 0,
-        "message": "操作成功",
-        "data": [
-          "艺术学院"
-        ]
-      }
+        code: 0,
+        message: "操作成功",
+        data: ["艺术学院"]
+      };
+    }
+  },
+  {
+    url: `${prefix}/admin/school/add`,
+    type: "post",
+    response: (req, res) => {
+      return {
+        code: 0,
+        message: "操作成功",
+        data: null
+      };
     }
   },
   {
@@ -19,20 +28,20 @@ module.exports = [
     type: "get",
     response: (req, res) => {
       return {
-        "code": 0,
-        "message": "操作成功",
-        "data": {
-          "totalCount": 100,
-          "teachers": [
+        code: 0,
+        message: "操作成功",
+        data: {
+          totalCount: 100,
+          teachers: [
             {
-              "id": 1,
-              "number": "1023547616",
-              "name": "李明",
-              "school": "艺术学院"
+              id: 1,
+              number: "1023547616",
+              name: "李明",
+              school: "艺术学院"
             }
           ]
         }
-      }
+      };
     }
   },
   {
@@ -40,15 +49,15 @@ module.exports = [
     type: "get",
     response: (req, res) => {
       return {
-        "code": 0,
-        "message": "操作成功",
-        "data": {
-          "id": 1,
-          "number": "1023547616",
-          "name": "李明",
-          "school": "艺术学院"
+        code: 0,
+        message: "操作成功",
+        data: {
+          id: 1,
+          number: "1023547616",
+          name: "李明",
+          school: "艺术学院"
         }
-      }
+      };
     }
   },
   {
@@ -56,23 +65,23 @@ module.exports = [
     type: "post",
     response: (req, res) => {
       return {
-        "code": 0,
-        "message": "操作成功",
-        "data": {
-          "id": 1
+        code: 0,
+        message: "操作成功",
+        data: {
+          id: 1
         }
-      }
+      };
     }
   },
   {
     url: `${prefix}/admin/teacher/edit`,
-    type: "put",
+    type: "post",
     response: (req, res) => {
       return {
-        "code": 0,
-        "message": "操作成功",
-        "data": null
-      }
+        code: 0,
+        message: "操作成功",
+        data: null
+      };
     }
   }
-]
+];

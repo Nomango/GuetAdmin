@@ -2,18 +2,26 @@
   <div class="graduation-list-container">
     <div class="filter-container">
       <el-input
-        v-model="nameText"
+        v-model="listQuery.student_name"
         placeholder="请输入姓名"
-        style="width: 200px;"
         class="filter-item"
-        @keyup.enter.native="handleFilter"
+      />
+      <el-input
+        v-model="listQuery.student_number"
+        placeholder="请输入学号"
+        class="filter-item"
+      />
+      <el-input
+        v-model="listQuery.name"
+        placeholder="请输入毕设名称"
+        class="filter-item"
       />
       <el-select
-        v-model="collegeName"
+        v-model="listQuery.school"
         filterable
         remote
-        class="college-select"
-        placeholder="请输入学院名称"
+        class="filter-item college-select"
+        placeholder="请输入/选择学院名称"
         :remote-method="handleRemoteMethod"
         :loading="selectLoading"
       >
@@ -26,7 +34,7 @@
       </el-select>
       <el-button
         v-waves
-        class="filter-item search-btn"
+        class="search-btn"
         type="primary"
         icon="el-icon-search"
         @click="handleFilter"
@@ -34,7 +42,7 @@
         搜索
       </el-button>
       <el-button
-        class="filter-item add-btn"
+        class="add-btn"
         type="primary"
         icon="el-icon-edit"
         @click="handleCreate"
@@ -49,29 +57,61 @@
       style="width: 100%"
     >
       <el-table-column
-        prop="number"
-        label="number"
+        prop="name"
+        label="毕设名称"
         align="center"
       />
       <el-table-column
         prop="name"
         label="姓名"
         align="center"
-      />
+      >
+        <template slot-scope="{row}">
+          <span>{{ row.student && row.student.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="student_number"
+        label="学号"
+        align="center"
+      >
+        <template slot-scope="{row}">
+          <span>{{ row.student && row.student.number }}</span>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="school"
         label="学院"
         align="center"
       />
       <el-table-column
-        prop="school"
         label="操作"
         align="center"
       >
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+          <el-button type="primary" size="mini" @click="handleEdit(row)">
             编辑
           </el-button>
+          <el-popover
+            :ref="`popover-${row.id}`"
+            placement="top"
+            width="160"
+            trigger="click"
+          >
+            <p>确定删除该项吗？</p>
+            <div style="text-align: right; margin: 0">
+              <el-button size="mini" type="text" @click="handlePopoverCancel(row)">取消</el-button>
+              <el-button type="primary" size="mini" @click="handleConfirmDelete(row)">确定</el-button>
+            </div>
+            <el-button
+              slot="reference"
+              size="mini"
+              type="danger"
+              :style="{marginLeft: '10px'}"
+            >
+              删除
+            </el-button>
+          </el-popover>
         </template>
       </el-table-column>
     </el-table>
@@ -86,64 +126,6 @@
         @current-change="handleCurrentChange"
       />
     </div>
-    <el-dialog
-      class="graduation-list-dialog"
-      :title="textMap[dialogStatus]"
-      :visible.sync="dialogFormVisible"
-    >
-      <el-form
-        ref="dataForm"
-        class="graduation-list-form"
-        :rules="rules"
-        :model="temp"
-        label-position="left"
-        label-width="70px"
-      >
-        <el-form-item label="Number" prop="number">
-          <el-input
-            v-model="temp.number"
-            class="graduation-dialog-input"
-            placeholder="请输入 number"
-          />
-        </el-form-item>
-        <el-form-item label="姓名" prop="name">
-          <el-input
-            v-model="temp.name"
-            placeholder="请输入姓名"
-            class="graduation-dialog-input"
-          />
-        </el-form-item>
-        <el-form-item label="学院" prop="school">
-          <el-select
-            v-model="temp.school"
-            class="graduation-dialog-select"
-            filterable
-            remote
-            placeholder="请输入学院名称"
-            :remote-method="handleDialogRemoteMethod"
-            :loading="selectLoading"
-          >
-            <el-option
-              v-for="item in dialogCollegeOptions"
-              :key="item.label"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          取消
-        </el-button>
-        <el-button
-          type="primary"
-          @click="dialogStatus==='create'? createData() : updateData()"
-        >
-          确定
-        </el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -151,8 +133,6 @@
 import waves from '@/directive/waves' // waves directive
 import {
   getWorkList,
-  addWorkList,
-  updateWorkList,
   delWorkList
 } from '@/api/graduate'
 import {
@@ -163,150 +143,70 @@ export default {
   directives: { waves },
   data() {
     return {
-      collegeName: '',
-      collegeOptions: [],
-      dialogCollegeOptions: [],
-      rules: {
-        name: [{ required: true, message: 'name is required', trigger: 'blur' }],
-        school: [{ required: true, message: 'school is required', trigger: 'change' }]
-      },
       currentPage: 1,
       pageSize: 10,
       totalCount: 0,
-      nameText: '',
-      school: '',
-      tableData: [],
-      listLoading: true,
+      listLoading: false,
       selectLoading: false,
-      dialogSelectLoading: false,
-      dialogFormVisible: false,
-      dialogStatus: '',
-      temp: {
-        number: "",
+      listQuery: {
+        school: "",
         name: "",
-        school: ""
+        student_number: "",
+        student_name: ""
       },
-      textMap: {
-        update: 'Edit',
-        create: 'Create'
-      }
+      collegeOptions: [],
+      tableData: []
     }
   },
 
   created() {
     this.getList()
+    this.getCollege()
   },
 
   methods: {
-    getList() {
+    async getCollege() {
+      const res = await getCollegeList()
+
+      this.handleMapCollegeOptions(res.data || [], true)
+    },
+
+    async getList() {
       this.listLoading = true
-      Promise.all(
-        [
-          getWorkList({
-            school: this.collegeName,
-            name: this.nameText,
-            page: this.currentPage,
-            pageSize: this.pageSize
-          })
-        ]
-      )
-        .then(([mentorRes, collegeRes]) => {
-          const { totalCount, teachers } = mentorRes.data || {}
 
-          this.totalCount = totalCount || 0
-          this.tableData = teachers || []
-          const newOptions = (collegeRes.data || []).map(collegeItem => {
-            return {
-              value: collegeItem,
-              label: collegeItem
-            }
-          })
-          this.dialogCollegeOptions = newOptions
-          this.collegeOptions = newOptions
-          this.listLoading = false
-        })
-    },
-
-    createData() {
-      this.$refs['dataForm'].validate((valid) => {
-        console.log('dataForm', this.$refs['dataForm']);
-        if (valid) {
-          addWorkList(this.temp).then(() => {
-            this.dialogFormVisible = false
-
-            this.$message({
-              message: 'Created Successfully',
-              type: 'success'
-            });
-
-            this.getList()
-          })
-        }
+      const { data } = await getWorkList({
+        ...this.listQuery,
+        page: this.currentPage,
+        pageSize: this.pageSize
       })
-    },
 
-    updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          updateWorkList(this.temp).then(() => {
-            this.dialogFormVisible = false
+      const { works, totalCount } = data || {}
 
-            this.$message({
-              message: 'Updated Successfully',
-              type: 'success'
-            });
+      this.listLoading = false
+      this.totalCount = totalCount
 
-            this.getList()
-          })
-        }
-      })
+      this.tableData = works || []
     },
 
     async handleRemoteMethod(query) {
-      if (query !== '') {
+      if (query !== "") {
         this.selectLoading = true;
         const res = await getCollegeList({
           name: query.trim()
         })
 
-        const collegeListData = res.data || {}
-
         this.selectLoading = false;
-        this.collegeOptions = collegeListData.map(item => ({
-          label: item,
-          value: item
-        }));
+        this.handleMapCollegeOptions(res.data || [], true)
       } else {
-        this.collegeOptions = [];
+        this.collegeOptions = []
       }
-    },
-    /** 弹窗的学院数据 */
-    async handleDialogRemoteMethod(query) {
-      if (query !== '') {
-        this.dialogSelectLoading = true;
-        const res = await getCollegeList({
-          name: query.trim()
-        })
-
-        const collegeListData = res.data || {}
-
-        this.dialogSelectLoading = false;
-        this.dialogCollegeOptions = collegeListData.map(item => ({
-          label: item,
-          value: item
-        }));
-      } else {
-        this.dialogCollegeOptions = [];
-      }
-    },
-
-    async handleDeleteProject() {
-      await delWorkList()
-      this.getList()
     },
 
     handleFilter() {
-      if (!this.nameText || !this.collegeName) {
+      if (
+        !this.listQuery.school || !this.listQuery.name ||
+        !this.listQuery.student_number || !this.listQuery.student_name
+      ) {
         this.$message({
           message: '请填写相应字段',
           type: 'error'
@@ -318,44 +218,53 @@ export default {
     },
 
     handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+      this.$router.push({
+        path: '/graduation-management/create'
       })
     },
 
-    handleUpdate(row) {
-      this.temp = Object.assign({}, row)
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+    handleEdit(row) {
+      this.$router.push({
+        path: `/graduation-management/edit/${row.id}`
       })
+    },
+
+    handlePopoverCancel(row) {
+      this.$refs[`popover-${row.id}`].doClose()
+    },
+
+    async handleConfirmDelete(row) {
+      const res = await delWorkList({
+        id: row.id
+      })
+
+      if (res.code === 0) {
+        this.$refs[`popover-${row.id}`].doClose()
+
+        this.$message({
+          message: "删除成功",
+          type: 'success'
+        })
+
+        this.getList()
+      }
+    },
+
+    handleMapCollegeOptions(data, isSearch) {
+      this.collegeOptions = data.map(item => ({
+        label: item,
+        value: item
+      }));
     },
 
     handleSizeChange(val) {
       this.pageSize = val
-      this.$nextTick(() => {
-        this.getList()
-      })
+      this.getList()
     },
 
     handleCurrentChange(val) {
       this.currentPage = val
-      this.$nextTick(() => {
-        this.getList()
-      })
-    },
-
-    resetTemp() {
-      this.temp = {
-        number: "",
-        name: "",
-        school: ""
-      }
+      this.getList()
     }
   }
 }
@@ -364,8 +273,10 @@ export default {
 <style lang="scss">
   .graduation-list-container {
 
-    .college-select, .search-btn, .add-btn {
+    .filter-item, .search-btn, .add-btn {
+      width: 200px;
       margin-left: 10px;
+      margin-bottom: 20px;
     }
 
     .pagination-container {
@@ -403,10 +314,6 @@ export default {
 <style lang="scss" scoped>
 .graduation-list-container {
   padding: 20px;
-}
-
-.filter-container {
-  padding-bottom: 20px;
 }
 
 .pagination-container {

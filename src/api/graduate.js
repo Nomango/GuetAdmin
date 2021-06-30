@@ -8,6 +8,13 @@ export function getWorkList(params) {
   });
 }
 
+export function getWorkListById(params) {
+  return request({
+    url: `/api/admin/work/${params.id}`,
+    method: "get"
+  });
+}
+
 export function addWorkList(body) {
   return request({
     url: "/api/admin/work/add",
@@ -19,7 +26,7 @@ export function addWorkList(body) {
 export function updateWorkList(body) {
   return request({
     url: "/api/admin/work/edit",
-    method: "put",
+    method: "post",
     body
   });
 }
@@ -27,7 +34,7 @@ export function updateWorkList(body) {
 export function delWorkList(body) {
   return request({
     url: "/api/admin/work/edit",
-    method: "delete",
+    method: "post",
     body
   });
 }
