@@ -222,9 +222,9 @@ export default {
         pageSize: this.pageSize
       })
 
-      const { totalCount, teachers } = res.data || {}
+      const { total_count, teachers } = res.data || {}
 
-      this.totalCount = totalCount || 0
+      this.totalCount = total_count || 0
       this.tableData = teachers || []
       this.listLoading = false
     },

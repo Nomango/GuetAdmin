@@ -34,7 +34,7 @@ module.exports = [
         code: 0,
         message: "操作成功",
         data: {
-          totalCount: 5,
+          total_count: 5,
           works: [
             {
               id: 1,

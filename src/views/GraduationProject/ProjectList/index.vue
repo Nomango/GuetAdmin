@@ -180,10 +180,10 @@ export default {
         pageSize: this.pageSize
       })
 
-      const { works, totalCount } = data || {}
+      const { works, total_count } = data || {}
 
       this.listLoading = false
-      this.totalCount = totalCount
+      this.total_count = total_count
 
       this.tableData = works || []
     },

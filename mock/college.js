@@ -31,7 +31,7 @@ module.exports = [
         code: 0,
         message: "操作成功",
         data: {
-          totalCount: 100,
+          total_count: 100,
           teachers: [
             {
               id: 1,
