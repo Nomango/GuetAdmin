@@ -15,26 +15,26 @@ export function getWorkListById(params) {
   });
 }
 
-export function addWorkList(body) {
+export function addWorkList(data) {
   return request({
     url: "/api/admin/work/add",
     method: "post",
-    body
+    data
   });
 }
 
-export function updateWorkList(body) {
+export function updateWorkList(data) {
   return request({
     url: "/api/admin/work/edit",
     method: "post",
-    body
+    data
   });
 }
 
-export function delWorkList(body) {
+export function delWorkList(data) {
   return request({
     url: "/api/admin/work/edit",
     method: "post",
-    body
+    data
   });
 }

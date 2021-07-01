@@ -8,6 +8,7 @@
       >
         <el-input
           v-model="postForm.student_name"
+          maxlength="32"
           placeholder="请输入姓名"
           class="article-form-input"
         />
@@ -20,7 +21,8 @@
       >
         <el-input
           v-model="postForm.student_number"
-          placeholder="请输入姓名"
+          maxlength="32"
+          placeholder="请输入学号"
           class="article-form-input"
         />
       </el-form-item>
@@ -33,6 +35,7 @@
         <el-select
           v-model="postForm.teachers"
           multiple
+          clearable
           collapse-tags
           placeholder="请选择导师"
           class="article-form-select"
@@ -54,6 +57,7 @@
         <el-select
           v-model="postForm.school"
           filterable
+          clearable
           remote
           class="article-form-select"
           placeholder="请输入/选择学院名称"
@@ -77,15 +81,17 @@
       >
         <el-input
           v-model="postForm.name"
+          maxlength="32"
           placeholder="请输入毕设名称"
           class="article-form-input"
         />
       </el-form-item>
 
-      <el-form-item label-width="85px" label="简介:">
+      <el-form-item prop="brief" label-width="85px" label="简介:">
         <el-input
           v-model="postForm.brief"
           :rows="1"
+          maxlength="255"
           type="textarea"
           class="article-form-textarea"
           autosize
@@ -97,7 +103,6 @@
         <Upload
           v-model="postForm.cover"
           action="/api/admin/upload"
-          :file-list="fileList"
           :on-success="handleSuccess"
         />
       </el-form-item>
@@ -133,7 +138,7 @@ const defaultForm = {
   level: 1,
   student_name: '',
   student_number: '',
-  teachers: [1, 2],
+  teachers: [],
   brief: '', // 简介
   cover: '',
   content: ''
@@ -157,17 +162,12 @@ export default {
       publishLoading: false,
       userListOptions: [],
       action: 'http://www.baidu.com',
-      fileList: [{
-        name: 'food.jpg', url: "http://image.biaobaiju.com/uploads/20191103/15/1572765897-YbgBztEKaf.jpg"
-      }],
       rules: {
         name: [{ required: true, message: '请输入毕设名称', trigger: 'blur' }],
         school: [{ required: true, message: '请输入/选择学院', trigger: 'change' }],
         student_name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
-        student_number: [{ required: true, message: '请输入学号', trigger: 'blur' }],
-        teachers: [{ required: true, message: '请选择导师', trigger: 'change' }],
         cover: [{ required: true, message: '请上传毕设封面', trigger: 'change' }],
-        content: [{ required: true, message: '请输入内容', trigger: 'blur' }]
+        brief: [{ required: true, message: '请输入简介', trigger: 'blur' }]
       },
       selectLoading: false,
       collegeOptions: {
@@ -202,7 +202,7 @@ export default {
       if (mentorRes.code === 0) {
         const { teachers } = mentorRes.data || {}
 
-        this.teachers = (teachers || []).map(item => {
+        this.teacherOptions = (teachers || []).map(item => {
           return {
             label: item.name,
             value: item.id
@@ -248,7 +248,6 @@ export default {
     },
 
     submitForm() {
-      console.log(this.postForm);
       this.$refs.postForm.validate(valid => {
         if (valid) {
           this.publishLoading = true
@@ -290,7 +289,7 @@ export default {
     },
 
     handleSuccess(file, fileList) {
-      this.fileList.splice(0, 1, file)
+      console.log('--------', file);
     },
 
     draftForm() {

@@ -66,11 +66,6 @@ export default {
     limit: {
       type: Number,
       default: 1
-    },
-
-    fileList: {
-      type: Array,
-      default: () => []
     }
   },
   data() {
@@ -85,13 +80,21 @@ export default {
       return this.value
     },
 
+    fileList() {
+      if (!this.value) {
+        return []
+      }
+
+      return Array.isArray(this.value) ? this.value : [this.value]
+    },
+
     showUpload() {
       return this.fileList.length && this.fileList.length >= this.limit
     }
   },
   methods: {
     handleRemove(file) {
-      this.$emit('onRemove', file)
+      this.$emit('change', this.fileList.filter(item => item !== file))
     },
 
     handleSuccess(response, file, fileList) {

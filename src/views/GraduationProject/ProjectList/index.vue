@@ -4,6 +4,7 @@
       <el-input
         v-model="listQuery.student_name"
         placeholder="请输入姓名"
+        maxlength="32"
         class="filter-item"
       />
       <el-input
@@ -14,6 +15,7 @@
       <el-input
         v-model="listQuery.name"
         placeholder="请输入毕设名称"
+        maxlength="32"
         class="filter-item"
       />
       <el-select

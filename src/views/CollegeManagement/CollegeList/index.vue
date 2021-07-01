@@ -4,6 +4,7 @@
       <el-select
         v-model="school"
         filterable
+        clearable
         remote
         class="college-select"
         placeholder="请输入/选择学院名称"
@@ -85,6 +86,7 @@
         <el-form-item label="学院名称" prop="name">
           <el-input
             v-model="schoolTemp.name"
+            maxlength="64"
             class="school-dialog-input"
             placeholder="请输入学院名称"
           />
@@ -126,6 +128,7 @@
           <el-input
             v-model="mentorTemp.name"
             placeholder="请输入导师姓名"
+            maxlength="32"
             class="mentor-dialog-input"
           />
         </el-form-item>
@@ -196,7 +199,9 @@ export default {
     async getList() {
       this.listLoading = true
 
-      const res = await getCollegeList()
+      const res = await getCollegeList({
+        name: this.school
+      })
 
       this.listLoading = false
       const collegeData = res.data || []
@@ -245,13 +250,6 @@ export default {
     },
 
     handleFilter() {
-      if (!this.school) {
-        this.$message({
-          message: '请填写学院名称',
-          type: 'error'
-        });
-        return
-      }
       this.currentPage = 1
       this.getList()
     },
@@ -278,7 +276,8 @@ export default {
       this.$refs['mentorForm'].validate((valid) => {
         if (valid) {
           addMentorList(this.mentorTemp).then(res => {
-            this.schooldialogFormVisible = false
+            this.mentordialogFormVisible = false
+
             if (res.code === 0) {
               this.$message({
                 message: "添加成功",

@@ -10,6 +10,7 @@
       <el-select
         v-model="collegeName"
         filterable
+        clearable
         remote
         class="college-select"
         placeholder="请输入/选择学院名称"
@@ -107,6 +108,7 @@
         <el-form-item label="姓名" prop="name">
           <el-input
             v-model="temp.name"
+            maxlength="32"
             placeholder="请输入姓名"
             class="mentor-dialog-input"
           />
@@ -116,6 +118,7 @@
             v-model="temp.school"
             class="mentor-dialog-select"
             filterable
+            clearable
             remote
             placeholder="请输入学院名称"
             :remote-method="handleDialogRemoteMethod"
@@ -123,7 +126,7 @@
           >
             <el-option
               v-for="item in dialogCollegeOptions.target"
-              :key="item.label"
+              :key="item.value"
               :label="item.label"
               :value="item.value"
             />
@@ -202,22 +205,26 @@ export default {
   methods: {
     async getCollege() {
       const res = await getCollegeList()
-      const newOptions = (res.data || []).map(collegeItem => {
-        return {
-          value: collegeItem,
-          label: collegeItem
-        }
-      })
+      const OptionsData = res.data || []
 
-      this.handleMapDialogCollegeOptions(newOptions)
-      this.handleMapCollegeOptions(newOptions)
+      this.handleMapDialogCollegeOptions(OptionsData)
+      this.handleMapCollegeOptions(OptionsData)
     },
 
     async getMentor() {
       this.listLoading = true
+      const queryList = {}
+
+      if (this.collegeName) {
+        queryList.school = this.collegeName
+      }
+
+      if (this.nameText) {
+        queryList.name = this.nameText
+      }
+
       const res = await getMentorList({
-        school: this.collegeName,
-        name: this.nameText,
+        ...queryList,
         page: this.currentPage,
         pageSize: this.pageSize
       })
@@ -231,17 +238,16 @@ export default {
 
     createData() {
       this.$refs['dataForm'].validate((valid) => {
-        console.log('dataForm', this.$refs['dataForm']);
         if (valid) {
           addMentorList(this.temp).then(() => {
             this.dialogFormVisible = false
 
             this.$message({
-              message: 'Created Successfully',
+              message: '创建成功',
               type: 'success'
             });
 
-            this.getList()
+            this.getMentor()
           })
         }
       })
@@ -254,11 +260,11 @@ export default {
             this.dialogFormVisible = false
 
             this.$message({
-              message: 'Updated Successfully',
+              message: '更新成功',
               type: 'success'
             });
 
-            this.getList()
+            this.getMentor()
           })
         }
       })
@@ -294,10 +300,12 @@ export default {
     },
 
     handleMapDialogCollegeOptions(data, isSearch) {
-      const newCollegeData = data.map(item => ({
-        label: item,
-        value: item
-      }));
+      const newCollegeData = data.map(item => {
+        return {
+          label: item,
+          value: item
+        }
+      });
 
       if (!isSearch) {
         this.dialogCollegeOptions.origin = newCollegeData
@@ -318,15 +326,8 @@ export default {
     },
 
     handleFilter() {
-      if (!this.nameText || !this.collegeName) {
-        this.$message({
-          message: '请填写相应字段',
-          type: 'error'
-        });
-        return
-      }
       this.currentPage = 1
-      this.getList()
+      this.getMentor()
     },
 
     handleCreate() {
@@ -351,14 +352,14 @@ export default {
     handleSizeChange(val) {
       this.pageSize = val
       this.$nextTick(() => {
-        this.getList()
+        this.getMentor()
       })
     },
 
     handleCurrentChange(val) {
       this.currentPage = val
       this.$nextTick(() => {
-        this.getList()
+        this.getMentor()
       })
     },
 
