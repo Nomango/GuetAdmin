@@ -1,18 +1,16 @@
 <template>
-  <div :class="{fullscreen:fullscreen}" class="tinymce-container" :style="{width:containerWidth}">
+  <div
+    :class="{fullscreen:fullscreen}"
+    class="tinymce-container"
+    :style="{width:containerWidth}"
+  >
     <textarea :id="tinymceId" class="tinymce-textarea" />
-    <div class="editor-custom-btn-container">
-      <editorImage color="#1890ff" class="editor-upload-btn" @successCBK="imageSuccessCBK" />
-    </div>
+    <slot name="extra" />
   </div>
 </template>
 
 <script>
-/**
- * docs:
- * https://panjiachen.github.io/vue-element-admin-site/feature/component/rich-editor.html#tinymce
- */
-import editorImage from './components/EditorImage'
+
 import plugins from './plugins'
 import toolbar from './toolbar'
 import load from './dynamicLoadScript'
@@ -22,7 +20,6 @@ const tinymceCDN = 'https://cdn.jsdelivr.net/npm/tinymce-all-in-one@4.9.3/tinymc
 
 export default {
   name: 'Tinymce',
-  components: { editorImage },
   props: {
     id: {
       type: String,
@@ -50,6 +47,7 @@ export default {
       required: false,
       default: 360
     },
+
     width: {
       type: [Number, String],
       required: false,
@@ -87,17 +85,21 @@ export default {
       }
     }
   },
+
   mounted() {
     this.init()
   },
+
   activated() {
     if (window.tinymce) {
       this.initTinymce()
     }
   },
+
   deactivated() {
     this.destroyTinymce()
   },
+
   destroyed() {
     this.destroyTinymce()
   },
@@ -112,11 +114,13 @@ export default {
         this.initTinymce()
       })
     },
+
     initTinymce() {
       const _this = this
       window.tinymce.init({
         selector: `#${this.tinymceId}`,
         language: this.languageTypeList['en'],
+        resize: 'both',
         height: this.height,
         body_class: 'panel-body ',
         object_resizing: false,
@@ -148,45 +152,10 @@ export default {
             _this.fullscreen = e.state
           })
         },
-        // it will try to keep these URLs intact
-        // https://www.tiny.cloud/docs-3x/reference/configuration/Configuration3x@convert_urls/
-        // https://stackoverflow.com/questions/5196205/disable-tinymce-absolute-to-relative-url-conversions
         convert_urls: false
-        // 整合七牛上传
-        // images_dataimg_filter(img) {
-        //   setTimeout(() => {
-        //     const $image = $(img);
-        //     $image.removeAttr('width');
-        //     $image.removeAttr('height');
-        //     if ($image[0].height && $image[0].width) {
-        //       $image.attr('data-wscntype', 'image');
-        //       $image.attr('data-wscnh', $image[0].height);
-        //       $image.attr('data-wscnw', $image[0].width);
-        //       $image.addClass('wscnph');
-        //     }
-        //   }, 0);
-        //   return img
-        // },
-        // images_upload_handler(blobInfo, success, failure, progress) {
-        //   progress(0);
-        //   const token = _this.$store.getters.token;
-        //   getToken(token).then(response => {
-        //     const url = response.data.qiniu_url;
-        //     const formData = new FormData();
-        //     formData.append('token', response.data.qiniu_token);
-        //     formData.append('key', response.data.qiniu_key);
-        //     formData.append('file', blobInfo.blob(), url);
-        //     upload(formData).then(() => {
-        //       success(url);
-        //       progress(100);
-        //     })
-        //   }).catch(err => {
-        //     failure('出现未知问题，刷新页面，或者联系程序员')
-        //     console.log(err);
-        //   });
-        // },
       })
     },
+
     destroyTinymce() {
       const tinymce = window.tinymce.get(this.tinymceId)
       if (this.fullscreen) {
@@ -197,14 +166,13 @@ export default {
         tinymce.destroy()
       }
     },
+
     setContent(value) {
       window.tinymce.get(this.tinymceId).setContent(value)
     },
+
     getContent() {
       window.tinymce.get(this.tinymceId).getContent()
-    },
-    imageSuccessCBK(arr) {
-      arr.forEach(v => window.tinymce.get(this.tinymceId).insertContent(`<img class="wscnph" src="${v.url}" >`))
     }
   }
 }
@@ -227,13 +195,6 @@ export default {
 .tinymce-textarea {
   visibility: hidden;
   z-index: -1;
-}
-
-.editor-custom-btn-container {
-  position: absolute;
-  right: 4px;
-  top: 4px;
-  /*z-index: 2005;*/
 }
 
 .fullscreen .editor-custom-btn-container {

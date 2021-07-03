@@ -16,7 +16,6 @@
 
       <el-form-item
         label="学号:"
-        prop="student_number"
         label-width="85px"
       >
         <el-input
@@ -29,7 +28,6 @@
 
       <el-form-item
         label="导师:"
-        prop="teachers"
         label-width="85px"
       >
         <el-select
@@ -99,11 +97,31 @@
         />
       </el-form-item>
 
+      <el-form-item
+        label="等级:"
+        prop="level"
+        label-width="85px"
+      >
+        <el-select
+          v-model="postForm.level"
+          clearable
+          class="article-form-select"
+          placeholder="请选择等级"
+        >
+          <el-option
+            v-for="item in levelOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
+
       <el-form-item label-width="85px" label="毕设封面:" prop="cover">
         <Upload
           v-model="postForm.cover"
-          action="/api/admin/upload"
-          :on-success="handleSuccess"
+          :action="action"
+          @onsuccess="handleSuccess"
         />
       </el-form-item>
 
@@ -111,10 +129,20 @@
         <Tinymce
           ref="editor"
           v-model="postForm.content"
-          width="90%"
           :height="400"
+          width="90%"
           style="minWidth: 585px"
-        />
+        >
+          <div slot="extra" class="editor-custom-btn-container">
+            <editorImage
+              color="#1890ff"
+              class="editor-upload-btn"
+              :action="action"
+              :prefix="prefix.image"
+              @successCBK="imageSuccessCBK"
+            />
+          </div>
+        </Tinymce>
       </el-form-item>
 
       <el-form-item label-width="85px" class="submit-form-item">
@@ -129,13 +157,15 @@
 <script>
 import Tinymce from '@/components/Tinymce'
 import Upload from '@/components/Upload'
+import EditorImage from '@/components/Upload/EditorImage'
 import { getWorkListById } from '@/api/graduate'
 import { getCollegeList, getMentorList } from '@/api/college'
+import { fetchPrefix } from '@/api/upload'
 
 const defaultForm = {
   name: '',
   school: '',
-  level: 1,
+  level: '',
   student_name: '',
   student_number: '',
   teachers: [],
@@ -148,7 +178,8 @@ export default {
   name: 'ArticleDetail',
   components: {
     Tinymce,
-    Upload
+    Upload,
+    EditorImage
   },
   props: {
     isEdit: {
@@ -161,25 +192,38 @@ export default {
       postForm: Object.assign({}, defaultForm),
       publishLoading: false,
       userListOptions: [],
-      action: 'http://www.baidu.com',
+      action: '/api/admin/upload/image',
       rules: {
         name: [{ required: true, message: '请输入毕设名称', trigger: 'blur' }],
         school: [{ required: true, message: '请输入/选择学院', trigger: 'change' }],
         student_name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
         cover: [{ required: true, message: '请上传毕设封面', trigger: 'change' }],
-        brief: [{ required: true, message: '请输入简介', trigger: 'blur' }]
+        brief: [{ required: true, message: '请输入简介', trigger: 'blur' }],
+        level: [{ required: true, message: '请选择等级', trigger: 'change' }]
       },
       selectLoading: false,
       collegeOptions: {
         target: [],
         origin: []
       },
-      teacherOptions: []
+      teacherOptions: [],
+      levelOptions: [{
+        label: '一等奖',
+        value: 1
+      }, {
+        label: '二等奖',
+        value: 2
+      }, {
+        label: '三等奖',
+        value: 3
+      }],
+      prefix: {}
     }
   },
 
   created() {
     this.getList()
+    this.getPrefix()
 
     if (this.isEdit) {
       const id = this.$route.params && this.$route.params.id
@@ -188,6 +232,11 @@ export default {
   },
 
   methods: {
+    async getPrefix() {
+      const res = await fetchPrefix()
+      this.prefix = res.data || {}
+    },
+
     async getList() {
       const mentorRes = await getMentorList({
         page: 0,
@@ -231,6 +280,7 @@ export default {
       this.postForm = Object.assign({}, {
         content: resData.content,
         cover: resData.cover,
+        level: resData.level,
         name: resData.name,
         brief: resData.brief,
         school: resData.school,
@@ -288,8 +338,11 @@ export default {
       this.collegeOptions.target = this.collegeOptions.origin.slice()
     },
 
-    handleSuccess(file, fileList) {
-      console.log('--------', file);
+    handleSuccess(res, file, fileList) {
+      if (res && res.code === 0) {
+        const { suffix } = res.data
+        this.postForm.cover = this.prefix.image + suffix
+      }
     },
 
     draftForm() {
@@ -307,36 +360,49 @@ export default {
         duration: 1000
       })
       this.postForm.status = 'draft'
+    },
+
+    imageSuccessCBK(arr) {
+      const editorEle = this.$refs['editor']
+
+      if (editorEle) {
+        arr.forEach(v =>
+          window.tinymce.get(editorEle.tinymceId).insertContent(`<img class="wscnph" style="max-width: 100%;" src="${v.url}" >`)
+        )
+      }
     }
   }
 }
 </script>
 
 <style lang="scss">
-  .article-container {
-    .form-container {
-      padding: 40px 45px 20px 50px;
-    }
-
-    .article-form-input, .article-form-select, .article-form-textarea {
-      width: 50%;
-    }
-
-    .article-form-textarea textarea {
-      padding-right: 40px;
-      resize: none;
-      border: none;
-      border-radius: 0px;
-      border-bottom: 1px solid #bfcbd9;
-    }
-
-    .submit-form-item {
-      width: 91%;
-      min-width: 671px;
-      margin-top: 20px;
-      text-align: right
-    }
+::v-deep .wscnph {
+  max-width: 200px;
+}
+.article-container {
+  .form-container {
+    padding: 40px 45px 20px 50px;
   }
+
+  .article-form-input, .article-form-select, .article-form-textarea {
+    width: 50%;
+  }
+
+  .article-form-textarea textarea {
+    padding-right: 40px;
+    resize: none;
+    border: none;
+    border-radius: 0px;
+    border-bottom: 1px solid #bfcbd9;
+  }
+
+  .submit-form-item {
+    width: 91%;
+    min-width: 671px;
+    margin-top: 20px;
+    text-align: right
+  }
+}
 </style>
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
@@ -352,5 +418,11 @@ export default {
     right: 10px;
     top: 0px;
   }
+}
+
+.editor-custom-btn-container {
+  position: absolute;
+  right: 4px;
+  top: 4px;
 }
 </style>

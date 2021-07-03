@@ -2,7 +2,7 @@ import request from "@/utils/request";
 
 export function getCollegeList(params) {
   return request({
-    url: "/api/admin/school",
+    url: "/api/school",
     method: "get",
     params
   });
@@ -18,7 +18,7 @@ export function addCollegeList(data) {
 
 export function getMentorList(params) {
   return request({
-    url: "/api/admin/teacher",
+    url: "/api/teacher",
     method: "get",
     params
   });

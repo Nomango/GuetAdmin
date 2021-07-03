@@ -1,8 +1,8 @@
 import request from "@/utils/request";
 
-export function getToken() {
+export function fetchPrefix() {
   return request({
-    url: "/qiniu/upload/token",
+    url: "/api/upload/prefix",
     method: "get"
   });
 }

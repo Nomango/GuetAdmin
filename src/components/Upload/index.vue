@@ -38,8 +38,9 @@
       v-show="!showUpload"
       class="el-inner-upload"
       :action="action"
-      @on-success="handleSuccess"
-      @on-change="handleChange"
+      :show-file-list="false"
+      :on-success="handleSuccess"
+      :before-upload="handleBeforeUpload"
     >
       <i slot="default" ref="upload" class="el-icon-plus" />
     </el-upload>
@@ -58,6 +59,7 @@ export default {
       type: String,
       default: ''
     },
+
     value: {
       type: String,
       default: ''
@@ -85,7 +87,9 @@ export default {
         return []
       }
 
-      return Array.isArray(this.value) ? this.value : [this.value]
+      const list = Array.isArray(this.value) ? this.value : [{ url: this.value }]
+
+      return list
     },
 
     showUpload() {
@@ -93,12 +97,27 @@ export default {
     }
   },
   methods: {
+    handleBeforeUpload(file) {
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!');
+      }
+
+      return isLt2M;
+    },
+
     handleRemove(file) {
-      this.$emit('change', this.fileList.filter(item => item !== file))
+      const isArray = Array.isArray(this.value)
+
+      if (isArray) {
+        this.$emit('input', this.fileList.filter(item => item.url !== file.url))
+      } else {
+        this.$emit('input', '')
+      }
     },
 
     handleSuccess(response, file, fileList) {
-      this.$emit('onSuccess', file, fileList)
+      this.$emit('onsuccess', response, file, fileList)
     },
 
     handlePictureCardPreview(file) {
@@ -109,10 +128,6 @@ export default {
     handleReload() {
       this.$refs['upload'].click()
       this.$emit('reupload')
-    },
-
-    handleChange() {
-      console.log('asdfasdfasdf');
     }
   }
 }

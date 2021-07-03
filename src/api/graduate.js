@@ -2,7 +2,7 @@ import request from "@/utils/request";
 
 export function getWorkList(params) {
   return request({
-    url: "/api/admin/work",
+    url: "/api/work",
     method: "get",
     params
   });
@@ -10,7 +10,7 @@ export function getWorkList(params) {
 
 export function getWorkListById(params) {
   return request({
-    url: `/api/admin/work/${params.id}`,
+    url: `/api/work/${params.id}`,
     method: "get"
   });
 }
