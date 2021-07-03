@@ -16,7 +16,7 @@ fi
 
 if [ `git branch | grep gh-pages` ]
 then
-    echo "Branch named gh-pages already exists"
+  git checkout gh-pages
 else
   git checkout -b gh-pages
 fi
