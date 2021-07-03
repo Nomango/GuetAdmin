@@ -14,7 +14,16 @@ if [ "$answer" != "" ] && [ "$answer" != "Y" ] && [ "$answer" != "y" ] ;then
   exit 0
 fi
 
-git checkout -b gh-pages
+if [ `git branch | grep gh-pages` ]
+then
+    echo "Branch named gh-pages already exists"
+else
+  git checkout -b gh-pages
+fi
+
 git add -f dist
 git commit -m 'build project'
 git subtree push --prefix dist origin gh-pages
+
+echo '\n'
+echo '部署成功'
