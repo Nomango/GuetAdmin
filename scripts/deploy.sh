@@ -17,7 +17,7 @@ fi
 if [ `git branch | grep gh-pages` ]
 then
   git checkout gh-pages
-  git pull
+  git pull --rebase origin main
 else
   git checkout -b gh-pages
 fi
