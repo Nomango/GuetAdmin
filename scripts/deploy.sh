@@ -22,7 +22,7 @@ else
   git checkout -b gh-pages
 fi
 
-git add -f dist
+git add .
 git commit -m 'build project'
 git push origin -u gh-pages
 
