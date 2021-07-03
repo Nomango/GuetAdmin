@@ -4,7 +4,7 @@ import store from "@/store";
 import { getToken } from "@/utils/auth";
 
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API,
+  baseURL: "http://47.102.102.16:8080",
   withCredentials: true, // send cookies when cross-domain requests
   timeout: 30000
 });
