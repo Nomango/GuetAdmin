@@ -10,6 +10,7 @@
     "preview": "node build/index.js --report",
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml",
     "lint": "eslint --fix --ext .js,.vue src ",
+    "deploy": "sh scripts/deploy.sh"
   },
   "dependencies": {
     "axios": "0.18.1",
