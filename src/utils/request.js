@@ -30,19 +30,21 @@ service.interceptors.response.use(
     const res = response.data;
 
     if (res.code !== 0) {
-      Message({
-        message: res.message || "Error",
-        type: "error",
-        duration: 3 * 1000
-      });
+      if (res.code === 401) {
+        Message({
+          message: res.message,
+          type: "error",
+          duration: 3 * 1000
+        });
 
-      if (!getToken()) {
-        location.reload();
+        store.dispatch("user/resetToken").then(() => {
+          location.reload();
+        });
 
         return;
       }
 
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
+      if (res.code === 50012 || res.code === 50014) {
         MessageBox.confirm(
           "You have been logged out, you can cancel to stay on this page, or log in again",
           "Confirm logout",
