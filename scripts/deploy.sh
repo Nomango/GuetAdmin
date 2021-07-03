@@ -17,13 +17,14 @@ fi
 if [ `git branch | grep gh-pages` ]
 then
   git checkout gh-pages
+  git pull
 else
   git checkout -b gh-pages
 fi
 
 git add -f dist
 git commit -m 'build project'
-git subtree push --prefix dist origin gh-pages
+git push origin -u gh-pages
 
 echo '\n'
 echo '部署成功'
