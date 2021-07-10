@@ -1,5 +1,6 @@
 "use strict";
 const path = require("path");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const defaultSettings = require("./src/settings.js");
 
 function resolve(dir) {
@@ -46,7 +47,8 @@ module.exports = {
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
-    name: name
+    name: name,
+    plugins: [new CopyWebpackPlugin([{ from: resolve("./public/CNAME") }])]
   },
   chainWebpack(config) {
     config.resolve.alias.set("@", resolve("src"));
