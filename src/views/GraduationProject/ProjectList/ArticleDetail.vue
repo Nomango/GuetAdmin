@@ -9,7 +9,7 @@
       <el-form-item label="毕设名称:" prop="name" label-width="85px">
         <el-input
           v-model="postForm.name"
-          maxlength="32"
+          maxlength="250"
           placeholder="请输入毕设名称"
           class="article-form-input"
         />
@@ -19,7 +19,7 @@
         <el-input
           v-model="postForm.brief"
           :rows="1"
-          maxlength="255"
+          maxlength="250"
           type="textarea"
           class="article-form-textarea"
           autosize
@@ -179,7 +179,7 @@ export default {
       postForm: Object.assign({}, defaultForm),
       publishLoading: false,
       userListOptions: [],
-      action: "/api/admin/upload/image",
+      action: `${process.env.VUE_APP_BASE_API}/api/admin/upload/image`,
       rules: {
         name: [{ required: true, message: "请输入毕设名称", trigger: "blur" }],
         school: [
@@ -201,6 +201,10 @@ export default {
       },
       teacherOptions: [],
       levelOptions: [
+        {
+          label: "无奖项",
+          value: 0
+        },
         {
           label: "一等奖",
           value: 1
