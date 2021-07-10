@@ -33,7 +33,7 @@ export function updateWorkList(data) {
 
 export function delWorkList(data) {
   return request({
-    url: "/api/admin/work/edit",
+    url: "/api/admin/work/delete",
     method: "post",
     data
   });

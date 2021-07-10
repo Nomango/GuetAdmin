@@ -145,7 +145,7 @@
 import Tinymce from "@/components/Tinymce";
 import Upload from "@/components/Upload";
 import EditorImage from "@/components/Upload/EditorImage";
-import { getWorkListById } from "@/api/graduate";
+import { getWorkListById, addWorkList, updateWorkList } from "@/api/graduate";
 import { getCollegeList, getMentorList } from "@/api/college";
 import { fetchPrefix } from "@/api/upload";
 
@@ -243,6 +243,7 @@ export default {
         page: 0,
         pageSize: 0
       });
+
       const res = await getCollegeList();
 
       if (res.code === 0) {
@@ -287,38 +288,52 @@ export default {
           name: resData.name,
           brief: resData.brief,
           school: resData.school,
-          teachers:
-            Array.isArray(resData.teachers) &&
-            resData.teachers.map(item => {
-              const teacherItem = this.teachers.find(
-                tItem => tItem.value === item
-              );
-              if (teacherItem) {
-                return {
-                  ...teacherItem
-                };
-              }
-            }),
+          teachers: Array.isArray(resData.teachers) ? resData.teachers : [],
           student_name: resData.student && resData.student.name,
           student_number: resData.student && resData.student.number
         }
       );
     },
 
+    handleListQuery() {
+      const listquery = {
+        ...this.postForm,
+        student: {
+          number: this.postForm.student_number,
+          name: this.postForm.name
+        }
+      };
+
+      if (this.isEdit) {
+        listquery.id = Number(this.$route.params.id);
+      }
+
+      delete listquery.student_name;
+      delete listquery.student_number;
+
+      return listquery;
+    },
+
     submitForm() {
       this.$refs.postForm.validate(valid => {
         if (valid) {
-          this.publishLoading = true;
-          this.$message({
-            message: "提交成功",
-            type: "success"
-          });
-          this.publishLoading = false;
+          const actionWorkApi = this.isEdit ? updateWorkList : addWorkList;
 
-          this.$nextTick(() => {
-            this.$router.replace({
-              name: "GraduationManagement"
-            });
+          actionWorkApi(this.handleListQuery()).then(res => {
+            if (res.code === 0) {
+              this.publishLoading = true;
+              this.$message({
+                message: "提交成功",
+                type: "success"
+              });
+              this.publishLoading = false;
+
+              this.$nextTick(() => {
+                this.$router.replace({
+                  name: "GraduationManagement"
+                });
+              });
+            }
           });
         }
       });

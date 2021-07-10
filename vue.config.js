@@ -48,7 +48,10 @@ module.exports = {
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
     name: name,
-    plugins: [new CopyWebpackPlugin([{ from: resolve("./public/CNAME") }])]
+    plugins: [new CopyWebpackPlugin([{ from: resolve("./public/CNAME") }])],
+    resolve: {
+      extensions: [".js", ".vue", ".json"]
+    }
   },
   chainWebpack(config) {
     config.resolve.alias.set("@", resolve("src"));

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { MessageBox, Message } from "element-ui";
+import { Message } from "element-ui";
 import store from "@/store";
 import { getToken } from "@/utils/auth";
 
@@ -30,13 +30,13 @@ service.interceptors.response.use(
     const res = response.data;
 
     if (res.code !== 0) {
-      if (res.code === 401) {
-        Message({
-          message: res.message,
-          type: "error",
-          duration: 3 * 1000
-        });
+      Message({
+        message: res.message,
+        type: "error",
+        duration: 3 * 1000
+      });
 
+      if (res.code === 401) {
         store.dispatch("user/resetToken").then(() => {
           location.reload();
         });
@@ -45,18 +45,17 @@ service.interceptors.response.use(
       }
 
       if (res.code === 50012 || res.code === 50014) {
-        MessageBox.confirm(
-          "You have been logged out, you can cancel to stay on this page, or log in again",
-          "Confirm logout",
-          {
-            confirmButtonText: "Re-Login",
-            cancelButtonText: "Cancel",
-            type: "warning"
-          }
-        ).then(() => {
-          store.dispatch("user/resetToken").then(() => {
-            location.reload();
-          });
+        // MessageBox.confirm(
+        //   "You have been logged out, you can cancel to stay on this page, or log in again",
+        //   "Confirm logout",
+        //   {
+        //     confirmButtonText: "Re-Login",
+        //     cancelButtonText: "Cancel",
+        //     type: "warning"
+        //   }
+        // )
+        store.dispatch("user/resetToken").then(() => {
+          location.reload();
         });
       }
       return Promise.reject(new Error(res.message || "Error"));
