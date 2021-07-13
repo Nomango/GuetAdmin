@@ -37,7 +37,6 @@
       :show-file-list="false"
       :on-success="handleSuccess"
       :headers="headers"
-      :with-credentials="true"
       :before-upload="handleBeforeUpload"
     >
       <i slot="default" ref="upload" class="el-icon-plus" />

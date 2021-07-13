@@ -123,6 +123,7 @@
               class="editor-upload-btn"
               :action="action"
               :prefix="prefix.image"
+              :headers="headers"
               @successCBK="imageSuccessCBK"
             />
           </div>
@@ -149,6 +150,7 @@ import EditorImage from "@/components/Upload/EditorImage";
 import { getWorkListById, addWorkList, updateWorkList } from "@/api/graduate";
 import { getCollegeList, getMentorList } from "@/api/college";
 import { fetchPrefix } from "@/api/upload";
+import { getToken } from "@/utils/auth";
 
 const defaultForm = {
   name: "",
@@ -181,6 +183,9 @@ export default {
       publishLoading: false,
       userListOptions: [],
       action: `${process.env.VUE_APP_BASE_API}/api/admin/upload/image`,
+      headers: {
+        "X-Token": getToken()
+      },
       rules: {
         name: [{ required: true, message: "请输入毕设名称", trigger: "blur" }],
         school: [
