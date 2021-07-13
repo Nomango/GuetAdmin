@@ -306,7 +306,7 @@ export default {
         ...this.postForm,
         student: {
           number: this.postForm.student_number,
-          name: this.postForm.name
+          name: this.postForm.student_name
         }
       };
 
