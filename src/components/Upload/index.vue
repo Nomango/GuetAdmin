@@ -1,16 +1,15 @@
 <template>
   <div class="upload-wrapper">
-    <ul v-if="fileList.length" class="el-upload-list el-upload-list--picture-card">
+    <ul
+      v-if="fileList.length"
+      class="el-upload-list el-upload-list--picture-card"
+    >
       <li
         v-for="(file, index) in fileList"
         :key="index"
         class="el-upload-list__item is-ready"
       >
-        <img
-          class="el-upload-list__item-thumbnail"
-          :src="file.url"
-          alt=""
-        >
+        <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
         <span class="el-upload-list__item-actions">
           <span
             class="el-upload-list__item-preview"
@@ -18,10 +17,7 @@
           >
             <i class="el-icon-zoom-in" />
           </span>
-          <span
-            class="el-upload-list__item-reupload"
-            @click="handleReload()"
-          >
+          <span class="el-upload-list__item-reupload" @click="handleReload()">
             <i class="el-icon-refresh-right" />
           </span>
           <span
@@ -40,84 +36,94 @@
       :action="action"
       :show-file-list="false"
       :on-success="handleSuccess"
+      :headers="headers"
+      :with-credentials="true"
       :before-upload="handleBeforeUpload"
     >
       <i slot="default" ref="upload" class="el-icon-plus" />
     </el-upload>
     <el-dialog :visible.sync="dialogVisible">
-      <img width="100%" :src="dialogImageUrl" alt="">
+      <img width="100%" :src="dialogImageUrl" alt="" />
     </el-dialog>
   </div>
 </template>
 
 <script>
-
 export default {
-  name: 'SingleImageUpload3',
+  name: "SingleImageUpload3",
   props: {
     action: {
       type: String,
-      default: ''
+      default: ""
     },
 
     value: {
       type: String,
-      default: ''
+      default: ""
     },
 
     limit: {
       type: Number,
       default: 1
+    },
+    headers: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
     return {
-      dialogImageUrl: '',
+      dialogImageUrl: "",
       dialogVisible: false,
       disabled: false
-    }
+    };
   },
   computed: {
     imageUrl() {
-      return this.value
+      return this.value;
     },
 
     fileList() {
       if (!this.value) {
-        return []
+        return [];
       }
 
-      const list = Array.isArray(this.value) ? this.value : [{ url: this.value }]
+      const list = Array.isArray(this.value)
+        ? this.value
+        : [{ url: this.value }];
 
-      return list
+      return list;
     },
 
     showUpload() {
-      return this.fileList.length && this.fileList.length >= this.limit
+      return this.fileList.length && this.fileList.length >= this.limit;
     }
   },
   methods: {
     handleBeforeUpload(file) {
       const isLt2M = file.size / 1024 / 1024 < 2;
       if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!');
+        this.$message.error("上传头像图片大小不能超过 2MB!");
       }
 
       return isLt2M;
     },
 
     handleRemove(file) {
-      const isArray = Array.isArray(this.value)
+      const isArray = Array.isArray(this.value);
 
       if (isArray) {
-        this.$emit('input', this.fileList.filter(item => item.url !== file.url))
+        this.$emit(
+          "input",
+          this.fileList.filter(item => item.url !== file.url)
+        );
       } else {
-        this.$emit('input', '')
+        this.$emit("input", "");
       }
     },
 
     handleSuccess(response, file, fileList) {
-      this.$emit('onsuccess', response, file, fileList)
+      this.$emit("onsuccess", response, file, fileList);
     },
 
     handlePictureCardPreview(file) {
@@ -126,11 +132,11 @@ export default {
     },
 
     handleReload() {
-      this.$refs['upload'].click()
-      this.$emit('reupload')
+      this.$refs["upload"].click();
+      this.$emit("reupload");
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
