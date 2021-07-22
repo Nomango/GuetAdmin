@@ -94,7 +94,6 @@ export default {
 
   mounted() {
     this.init();
-    this.hideEle();
   },
 
   activated() {
@@ -122,21 +121,11 @@ export default {
       });
     },
 
-    hideEle() {
-      this.$nextTick(() => {
-        const ele = document.querySelector(".mce-branding");
-
-        if (ele) {
-          ele.style.display = "none";
-        }
-      });
-    },
-
     initTinymce() {
       const _this = this;
       window.tinymce.init({
         selector: `#${this.tinymceId}`,
-        language: this.languageTypeList["zh"],
+        language: this.languageTypeList.zh,
         resize: "both",
         height: this.height,
         body_class: "panel-body ",

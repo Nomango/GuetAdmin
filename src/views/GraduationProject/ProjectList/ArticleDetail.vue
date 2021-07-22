@@ -395,7 +395,7 @@ export default {
     },
 
     imageSuccessCBK(arr) {
-      const editorEle = this.$refs["editor"];
+      const editorEle = this.$refs.editor;
 
       if (editorEle) {
         arr.forEach(v =>

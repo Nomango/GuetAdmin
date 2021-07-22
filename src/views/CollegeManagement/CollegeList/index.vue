@@ -245,7 +245,7 @@ export default {
       }
       this.schooldialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs['schoolForm'].clearValidate()
+        this.$refs.schoolForm.clearValidate()
       })
     },
 
@@ -255,7 +255,7 @@ export default {
     },
 
     confirmCreateSchool() {
-      this.$refs['schoolForm'].validate((valid) => {
+      this.$refs.schoolForm.validate((valid) => {
         if (valid) {
           addCollegeList(this.schoolTemp).then(res => {
             this.schooldialogFormVisible = false
@@ -273,7 +273,7 @@ export default {
     },
 
     confirmCreateMentor() {
-      this.$refs['mentorForm'].validate((valid) => {
+      this.$refs.mentorForm.validate((valid) => {
         if (valid) {
           addMentorList(this.mentorTemp).then(res => {
             this.mentordialogFormVisible = false
@@ -299,7 +299,7 @@ export default {
       }
       this.mentordialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs['mentorForm'].clearValidate()
+        this.$refs.mentorForm.clearValidate()
       })
     },
 

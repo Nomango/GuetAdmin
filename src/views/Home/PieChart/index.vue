@@ -3,9 +3,9 @@
 </template>
 
 <script>
-import echarts from 'echarts'
-require('echarts/theme/macarons') // echarts theme
+import echarts from 'echarts' // echarts theme
 import resize from '@/mixins/resize'
+require('echarts/theme/macarons')
 
 export default {
   mixins: [resize],

@@ -237,7 +237,7 @@ export default {
     },
 
     createData() {
-      this.$refs['dataForm'].validate((valid) => {
+      this.$refs.dataForm.validate((valid) => {
         if (valid) {
           addMentorList(this.temp).then(() => {
             this.dialogFormVisible = false
@@ -254,7 +254,7 @@ export default {
     },
 
     updateData() {
-      this.$refs['dataForm'].validate((valid) => {
+      this.$refs.dataForm.validate((valid) => {
         if (valid) {
           updateMentorList(this.temp).then(() => {
             this.dialogFormVisible = false
@@ -336,7 +336,7 @@ export default {
       this.dialogFormVisible = true
 
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+        this.$refs.dataForm.clearValidate()
       })
     },
 
@@ -345,7 +345,7 @@ export default {
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+        this.$refs.dataForm.clearValidate()
       })
     },
 

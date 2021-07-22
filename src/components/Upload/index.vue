@@ -131,7 +131,7 @@ export default {
     },
 
     handleReload() {
-      this.$refs["upload"].click();
+      this.$refs.upload.click();
       this.$emit("reupload");
     }
   }

@@ -101,7 +101,6 @@ export default {
         const fileItem = this.listObj[fileKey];
         fileItem.url = this.prefix + data.suffix; // response.files.file
         fileItem.hasSuccess = true;
-        return;
       }
     },
 
