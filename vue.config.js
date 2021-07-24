@@ -33,6 +33,7 @@ module.exports = {
   },
   configureWebpack: {
     name: name,
+    devtool: 'source-map',
     plugins: [new CopyWebpackPlugin([{ from: resolve("./public/CNAME") }])]
   },
   chainWebpack(config) {

@@ -11,14 +11,22 @@
     </el-button>
     <el-dialog :visible.sync="dialogVisible">
       <el-upload
+        drag
         :show-file-list="false"
-        :on-success="handleVideoSuccess"
         :before-upload="beforeUploadVideo"
         class="editor-slide-upload"
         action=""
         :headers="headers"
         :http-request="uploadVideoFile"
       >
+        <i v-if="!videoFlag && !uploadSuccess" class="el-icon-upload"></i>
+        <div v-if="!videoFlag && !uploadSuccess" class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <el-progress
+          v-if="videoFlag"
+          type="circle"
+          v-bind:percentage="videoUploadPercent"
+          style="margin-top:7px;"
+          />
         <video
           v-if="videoForm.showVideoPath != '' && !videoFlag"
           v-bind:src="videoForm.showVideoPath"
@@ -26,21 +34,9 @@
         >
           您的浏览器不支持视频播放
         </video>
-        <i
-          v-else-if="videoForm.showVideoPath == '' && !videoFlag"
-          class="el-icon-plus"
-        />
-        <el-progress
-          v-if="videoFlag == true"
-          type="circle"
-          v-bind:percentage="videoUploadPercent"
-          style="margin-top:7px;"
-        />
+        <div class="el-upload__tip" slot="tip">只能上传mp4/ogg/flv/avi/wmv/rmvb/mov文件，且不超过500MB</div>
       </el-upload>
-      <el-button @click="dialogVisible = false">
-        取消
-      </el-button>
-      <el-button type="primary" @click="handleSubmit">
+      <el-button type="primary" @click="handleSubmit" v-if="uploadSuccess">
         确认
       </el-button>
     </el-dialog>
@@ -53,6 +49,9 @@
 
 import OSS from "ali-oss";
 import { getSTSToken } from "@/api/AssumeRole";
+import { fetchPrefix } from "@/api/upload";
+import crypto from 'crypto';
+import path from 'path';
 
 export default {
   name: "EditorSlideUpload",
@@ -76,12 +75,12 @@ export default {
     return {
       dialogVisible: false,
       OSSClient: null,
+      OSSRootPath: "",
 
+      uploadSuccess: false,
       videoFlag: false,
       // 是否显示进度条
       videoUploadPercent: "",
-      // 进度条的进度，
-      isShowUploadVideo: false,
       // 显示上传按钮
       videoForm: {
         showVideoPath: ""
@@ -89,9 +88,16 @@ export default {
     };
   },
   created() {
+    this.getPrefix();
     this.getOSSClient();
   },
   methods: {
+    async getPrefix() {
+      const res = await fetchPrefix();
+      const prefix = res.data || {};
+      this.OSSRootPath = prefix.root;
+    },
+
     async getOSSClient() {
       const res = await getSTSToken({});
       const { data } = res;
@@ -109,81 +115,46 @@ export default {
       });
     },
 
-    uploadVideoFile(params) {
-      const file = params.file;
-      let filename = file.filename;
-
-      // 最好可以按work_id分开上传路径，也就是 /videos/:work_id/xxx.mp4
-      // 但是不知道怎么把work_id传过来
-      // 如果不好传work_id，可以随机产生一个文件名，防止名称冲突（记得带文件后缀）
-      filename = "videos/" + filename;
-      this.multipartUpload(filename, file);
+    getRandomString(len) {
+      return crypto.randomBytes(Math.ceil(len / 2)).toString('hex').slice(0, len)
     },
 
-    async putObject(filename, data) {
-      // 上传单个文件
-      try {
-        const result = await this.OSSClient.put(filename, data);
-        console.log(result);
-      } catch (e) {
-        // TODO 处理一下异常
-        this.$message.error(e);
-        console.log(e);
-      }
+    uploadVideoFile(params) {
+      const file = params.file;
+      const filename = "videos/" + this.getRandomString(24) + path.extname(file.name);
+      this.multipartUpload(filename, file);
     },
 
     async multipartUpload(filename, data) {
       // 分片上传
-
-      // 支持File对象、Blob数据以及OSS Buffer。
-      // 填写本地文件的完整路径。如果未指定本地路径，则默认从示例程序所属项目对应本地路径中上传文件。
-      // const data = 'D:\\localpath\\examplefile.txt';
-      // 填写上传的内容。
-      // const data = ;
-      // 填写上传的内容。
-      // const data = new OSS.Buffer('Hello OSS');
-
       try {
-        // TODO 不确定这里的Blob用的对不对
         const result = await this.OSSClient.multipartUpload(
           filename,
-          new Blob(data),
+          data,
           {
             progress: function(percentage, checkpoint) {
               this.videoFlag = true;
-              // TODO 不确定这里的percentage是什么
-              console.log(percentage);
-              this.videoUploadPercent = percentage.toFixed(0) * 1;
-            },
-            meta: { year: 2020, people: "test" },
-            mime: "text/plain"
+              this.videoUploadPercent = percentage.toFixed(0) * 100;
+            }
           }
         );
-        // TODO 不清楚result是什么，应该有对象的url吧
-        console.log(result);
+
+        // 上传成功
+        this.uploadSuccess = true;
+        this.videoFlag = false;
+        this.videoUploadPercent = 0;
+        this.videoForm.showVideoPath = this.OSSRootPath + result.name;
       } catch (e) {
-        // TODO 处理一下异常
-        this.$message.error(e);
+        this.$message.error('上传失败，请重试');
         console.log(e);
       }
     },
 
-    handleVideoSuccess(res, file) {
-      this.isShowUploadVideo = true;
-      this.videoFlag = false;
-      this.videoUploadPercent = 0;
-
-      if (file.status === "success") {
-        // TODO 这里的文件路径应该是从上传的result拿到，但是不知道result是什么
-        // 也可以用后端的 /api/upload/prefix 拿到video文件地址前缀，然后拼起来得到完整url
-        this.videoForm.showVideoPath = file.url;
-      } else {
-        this.$message.error("上传失败，请重新上传");
-      }
-    },
-
     handleSubmit() {
-      console.log("handleSubmit");
+      this.$emit("successCBK", this.videoForm.showVideoPath);
+      this.videoForm.showVideoPath = "";
+      this.dialogVisible = false;
+      this.uploadSuccess = false;
     },
 
     beforeUploadVideo(file) {
@@ -196,8 +167,7 @@ export default {
           "video/avi",
           "video/wmv",
           "video/rmvb",
-          "video/mov",
-          "video/ogv"
+          "video/mov"
         ].indexOf(file.type) === -1
       ) {
         this.$message.warning("请上传正确的视频格式");
@@ -207,7 +177,6 @@ export default {
         this.$message.warning("视频大小不能超过500MB");
         return false;
       }
-      this.isShowUploadVideo = false;
     }
   }
 };
@@ -219,5 +188,11 @@ export default {
   ::v-deep .el-upload--picture-card {
     width: 100%;
   }
+}
+
+.video-form-icon {
+  padding: 50px;
+  border: 1px solid #989898;
+  border-radius: 5px;
 }
 </style>

@@ -144,7 +144,7 @@
               :headers="headers"
               @successCBK="imageSuccessCBK"
             />
-            <EditorVideo />
+            <EditorVideo @successCBK="videoSuccessCBK" />
           </div>
         </Tinymce>
       </el-form-item>
@@ -431,6 +431,18 @@ export default {
               `<img class="wscnph" style="max-width: 100%;" src="${v.url}" >`
             )
         );
+      }
+    },
+
+    videoSuccessCBK(videoPath) {
+      const editorEle = this.$refs.editor;
+
+      if (editorEle) {
+        window.tinymce
+          .get(editorEle.tinymceId)
+          .insertContent(
+            `<video src="${videoPath}" controls="controls">复制链接播放视频：${videoPath}</video>`
+          )
       }
     }
   }
