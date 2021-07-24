@@ -48,6 +48,15 @@
         </el-select>
       </el-form-item>
 
+      <el-form-item label="专业:" prop="major" label-width="85px">
+        <el-input
+          v-model="postForm.major"
+          maxlength="32"
+          placeholder="请输入专业名称"
+          class="article-form-input"
+        />
+      </el-form-item>
+
       <el-form-item label="学生姓名:" prop="student_name" label-width="85px">
         <el-input
           v-model="postForm.student_name"
@@ -66,13 +75,22 @@
         />
       </el-form-item>
 
-      <el-form-item label="教师:" label-width="85px">
+      <el-form-item label="联系方式:" prop="connect" label-width="85px">
+        <el-input
+          v-model="postForm.connect"
+          maxlength="32"
+          placeholder="请输入联系方式"
+          class="article-form-input"
+        />
+      </el-form-item>
+
+      <el-form-item label="导师:" label-width="85px">
         <el-select
           v-model="postForm.teachers"
           multiple
           clearable
           collapse-tags
-          placeholder="请选择教师"
+          placeholder="请选择导师"
           class="article-form-select"
         >
           <el-option
@@ -155,9 +173,11 @@ import { getToken } from "@/utils/auth";
 const defaultForm = {
   name: "",
   school: "",
+  major: "",
   level: "",
   student_name: "",
   student_number: "",
+  connect: "",
   teachers: [],
   brief: "", // 简介
   cover: "",
@@ -190,6 +210,9 @@ export default {
         name: [{ required: true, message: "请输入毕设名称", trigger: "blur" }],
         school: [
           { required: true, message: "请输入/选择学院", trigger: "change" }
+        ],
+        major: [
+          { required: true, message: "请输入专业名称", trigger: "blur" }
         ],
         student_name: [
           { required: true, message: "请输入姓名", trigger: "blur" }
@@ -296,7 +319,9 @@ export default {
           school: resData.school,
           teachers: Array.isArray(resData.teachers) ? resData.teachers : [],
           student_name: resData.student && resData.student.name,
-          student_number: resData.student && resData.student.number
+          student_number: resData.student && resData.student.number,
+          major: resData.major,
+          connect: resData.connect,
         }
       );
     },
