@@ -95,22 +95,15 @@ export default {
   },
   methods: {
     getOSSClient() {
-      const res = await getSTSToken({
-        Action: 'AssumeRole',
-        RoleArn: 'acs:ram::1608374548476435:role/ramosstest',
-        RoleSessionName: 'ossuploadvideo',
-        DurationSeconds: 3600,
-      })
-
-      let { Credentials } = res;
+      const res = await getSTSToken({})
       this.OSSClient = new OSS({
           // yourRegion填写Bucket所在地域。以华东1（杭州）为例，Region填写为oss-cn-hangzhou。
           region: 'oss-cn-shenzhen',
           // 从STS服务获取的临时访问密钥（AccessKey ID和AccessKey Secret）。
-          accessKeyId: Credentials.AccessKeyId,
-          accessKeySecret: Credentials.AccessKeySecret,
+          accessKeyId: res.AccessKeyId,
+          accessKeySecret: res.AccessKeySecret,
           // 从STS服务获取的安全令牌（SecurityToken）。
-          stsToken: Credentials.SecurityToken,
+          stsToken: res.SecurityToken,
           // 填写Bucket名称。
           bucket: 'guetshow'
       });
