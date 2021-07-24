@@ -18,7 +18,7 @@ import load from "./dynamicLoadScript";
 const tinymceCDN =
   "https://cdn.jsdelivr.net/npm/tinymce-all-in-one@4.9.3/tinymce.min.js";
 
-const mediaPluginCDN = "http://tinymce.ax-z.cn/plugins/media-plugin-magic-by-snowmile.js";
+// const mediaPluginCDN = "http://tinymce.ax-z.cn/plugins/media-plugin-magic-by-snowmile.js";
 
 export default {
   name: "Tinymce",

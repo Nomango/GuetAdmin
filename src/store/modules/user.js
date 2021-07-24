@@ -33,6 +33,7 @@ const actions = {
     const resData = res.data || {};
 
     if (resData.token) {
+      commit('SET_TOKEN', resData.token)
       setToken(resData.token);
     }
   },
