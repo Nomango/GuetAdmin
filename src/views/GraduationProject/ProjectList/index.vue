@@ -61,6 +61,7 @@
       :data="tableData"
       border
       style="width: 100%"
+      height="500"
     >
       <el-table-column
         prop="id"
@@ -195,7 +196,7 @@ export default {
       const { works, total_count } = data || {}
 
       this.listLoading = false
-      this.total_count = total_count
+      this.totalCount = total_count
 
       this.tableData = works || []
     },
@@ -284,9 +285,17 @@ export default {
 
 <style lang="scss">
   .graduation-list-container {
+    height: 100%;
+    overflow: auto;
 
-    .filter-item, .search-btn, .add-btn {
+    .filter-item {
       width: 200px;
+      margin-left: 10px;
+      margin-bottom: 20px;
+    }
+
+    .search-btn, .add-btn {
+      width: 100px;
       margin-left: 10px;
       margin-bottom: 20px;
     }
