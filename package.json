@@ -9,6 +9,7 @@
     "deploy": "yarn build && gh-pages -d dist"
   },
   "dependencies": {
+    "ali-oss": "^6.16.0",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "echarts": "4.2.1",
