@@ -1,10 +1,11 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 
+Vue.use(VueRouter);
+
 /* Layout */
 import Layout from "@/layout";
 
-Vue.use(VueRouter);
 
 /**
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -26,7 +27,7 @@ Vue.use(VueRouter);
 export const constantRoutes = [
   {
     path: "/login",
-    component: () => import("@/views/Login"),
+    component: () => import("@/views/login/index"),
     hidden: true
   },
 
