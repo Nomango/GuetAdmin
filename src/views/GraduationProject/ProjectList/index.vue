@@ -1,23 +1,6 @@
 <template>
   <div class="graduation-list-container">
     <div class="filter-container">
-      <el-input
-        v-model="listQuery.student_name"
-        placeholder="请输入姓名"
-        maxlength="32"
-        class="filter-item"
-      />
-      <el-input
-        v-model="listQuery.student_number"
-        placeholder="请输入学号"
-        class="filter-item"
-      />
-      <el-input
-        v-model="listQuery.name"
-        placeholder="请输入毕设名称"
-        maxlength="32"
-        class="filter-item"
-      />
       <el-select
         v-model="listQuery.school"
         filterable
@@ -26,6 +9,7 @@
         placeholder="请输入/选择学院名称"
         :remote-method="handleRemoteMethod"
         :loading="selectLoading"
+        :clearable="true"
       >
         <el-option
           v-for="item in collegeOptions"
@@ -34,6 +18,26 @@
           :value="item.value"
         />
       </el-select>
+      <el-input
+        v-model="listQuery.student_name"
+        placeholder="请输入姓名"
+        maxlength="32"
+        class="filter-item"
+        :clearable="true"
+      />
+      <el-input
+        v-model="listQuery.student_number"
+        placeholder="请输入学号"
+        class="filter-item"
+        :clearable="true"
+      />
+      <el-input
+        v-model="listQuery.name"
+        placeholder="请输入毕设名称"
+        maxlength="32"
+        class="filter-item"
+        :clearable="true"
+      />
       <el-button
         v-waves
         class="search-btn"
@@ -59,6 +63,17 @@
       style="width: 100%"
     >
       <el-table-column
+        prop="id"
+        label="ID"
+        align="center"
+        width="80"
+      />
+      <el-table-column
+        prop="school"
+        label="学院"
+        align="center"
+      />
+      <el-table-column
         prop="name"
         label="毕设名称"
         align="center"
@@ -81,11 +96,6 @@
           <span>{{ row.student && row.student.number }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        prop="school"
-        label="学院"
-        align="center"
-      />
       <el-table-column
         label="操作"
         align="center"
@@ -206,8 +216,8 @@ export default {
 
     handleFilter() {
       if (
-        !this.listQuery.school || !this.listQuery.name ||
-        !this.listQuery.student_number || !this.listQuery.student_name
+        !this.listQuery.school && !this.listQuery.name &&
+        !this.listQuery.student_number && !this.listQuery.student_name
       ) {
         this.$message({
           message: '请填写相应字段',
