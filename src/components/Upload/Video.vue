@@ -15,6 +15,7 @@
         :on-success="handleVideoSuccess"
         :before-upload="beforeUploadVideo"
         class="editor-slide-upload"
+        action=""
         :headers="headers"
         :http-request="uploadVideoFile"
       >
@@ -28,17 +29,13 @@
         <i
           v-else-if="videoForm.showVideoPath == '' && !videoFlag"
           class="el-icon-plus"
-        ></i>
+        />
         <el-progress
           v-if="videoFlag == true"
           type="circle"
           v-bind:percentage="videoUploadPercent"
           style="margin-top:7px;"
-        >
-        </el-progress>
-        <!-- <i class="el-icon-upload"></i> -->
-        <!-- <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div class="el-upload__tip" slot="tip">只能上传mp4文件，且不超过500MB</div> -->
+        />
       </el-upload>
       <el-button @click="dialogVisible = false">
         取消
@@ -54,7 +51,7 @@
 // OSS相关文档
 // https://help.aliyun.com/document_detail/64047.html?spm=a2c4g.11186623.6.1227.4b0426fdpDkw93
 
-import { OSS } from "ali-oss";
+import OSS from "ali-oss";
 import { getSTSToken } from "@/api/AssumeRole";
 
 export default {
@@ -63,11 +60,6 @@ export default {
     color: {
       type: String,
       default: "#1890ff"
-    },
-
-    action: {
-      type: String,
-      default: ""
     },
 
     prefix: {
@@ -204,7 +196,8 @@ export default {
           "video/avi",
           "video/wmv",
           "video/rmvb",
-          "video/mov"
+          "video/mov",
+          "video/ogv"
         ].indexOf(file.type) === -1
       ) {
         this.$message.warning("请上传正确的视频格式");
