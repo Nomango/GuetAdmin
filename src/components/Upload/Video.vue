@@ -190,6 +190,10 @@ export default {
       }
     },
 
+    handleSubmit() {
+      console.log("handleSubmit");
+    },
+
     beforeUploadVideo(file) {
       const isLt500M = file.size / 1024 / 1024 < 500;
       if (

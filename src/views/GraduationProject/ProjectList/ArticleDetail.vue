@@ -136,7 +136,7 @@
           style="minWidth: 585px"
         >
           <div slot="extra" class="editor-custom-btn-container">
-            <editorImage
+            <EditorImage
               color="#1890ff"
               class="editor-upload-btn"
               :action="action"
@@ -144,6 +144,7 @@
               :headers="headers"
               @successCBK="imageSuccessCBK"
             />
+            <EditorVideo />
           </div>
         </Tinymce>
       </el-form-item>
@@ -165,6 +166,7 @@
 import Tinymce from "@/components/Tinymce";
 import Upload from "@/components/Upload";
 import EditorImage from "@/components/Upload/EditorImage";
+import EditorVideo from "@/components/Upload/Video.vue";
 import { getWorkListById, addWorkList, updateWorkList } from "@/api/graduate";
 import { getCollegeList, getMentorList } from "@/api/college";
 import { fetchPrefix } from "@/api/upload";
@@ -189,7 +191,8 @@ export default {
   components: {
     Tinymce,
     Upload,
-    EditorImage
+    EditorImage,
+    EditorVideo
   },
   props: {
     isEdit: {
@@ -485,5 +488,11 @@ export default {
   position: absolute;
   right: 4px;
   top: 4px;
+  display: flex;
+  align-items: center;
+
+  .upload-container {
+    margin-right: 10px;
+  }
 }
 </style>
