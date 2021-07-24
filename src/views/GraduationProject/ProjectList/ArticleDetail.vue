@@ -211,9 +211,7 @@ export default {
         school: [
           { required: true, message: "请输入/选择学院", trigger: "change" }
         ],
-        major: [
-          { required: true, message: "请输入专业名称", trigger: "blur" }
-        ],
+        major: [{ required: true, message: "请输入专业名称", trigger: "blur" }],
         student_name: [
           { required: true, message: "请输入姓名", trigger: "blur" }
         ],
@@ -321,7 +319,7 @@ export default {
           student_name: resData.student && resData.student.name,
           student_number: resData.student && resData.student.number,
           major: resData.major,
-          connect: resData.connect,
+          connect: resData.connect
         }
       );
     },

@@ -26,13 +26,13 @@ Vue.use(Router);
 export const constantRoutes = [
   {
     path: "/login",
-    component: () => import("@/views/Login"),
+    component: () => import("../views/Login/index.vue"),
     hidden: true
   },
 
   {
     path: "/404",
-    component: () => import("@/views/404"),
+    component: () => import("../views/404.vue"),
     hidden: true
   },
 
@@ -43,7 +43,7 @@ export const constantRoutes = [
     children: [
       {
         path: "home",
-        component: () => import("@/views/Home"),
+        component: () => import("../views/Home/index.vue"),
         name: "Home",
         meta: { title: "概览", icon: "dashboard", affix: true }
       }
@@ -60,13 +60,15 @@ export const constantRoutes = [
       {
         path: "college-list",
         name: "CollegeList",
-        component: () => import("@/views/CollegeManagement/CollegeList"),
+        component: () =>
+          import("../views/CollegeManagement/CollegeList/index.vue"),
         meta: { title: "学院列表" }
       },
       {
         path: "mentor-list",
         name: "MentorList",
-        component: () => import("@/views/CollegeManagement/MentorList"),
+        component: () =>
+          import("../views/CollegeManagement/MentorList/index.vue"),
         meta: { title: "导师列表" }
       }
     ]
@@ -84,13 +86,15 @@ export const constantRoutes = [
     children: [
       {
         path: "list",
-        component: () => import("@/views/GraduationProject/ProjectList/index"),
+        component: () =>
+          import("../views/GraduationProject/ProjectList/index.vue"),
         name: "ProjectList",
         meta: { title: "毕设列表" }
       },
       {
         path: "create",
-        component: () => import("@/views/GraduationProject/ProjectList/create"),
+        component: () =>
+          import("../views/GraduationProject/ProjectList/create.vue"),
         name: "CreateProject",
         meta: {
           title: "创建毕设",
@@ -101,7 +105,8 @@ export const constantRoutes = [
       },
       {
         path: "edit/:id(\\d+)",
-        component: () => import("@/views/GraduationProject/ProjectList/edit"),
+        component: () =>
+          import("../views/GraduationProject/ProjectList/edit.vue"),
         name: "EditProject",
         meta: {
           title: "编辑毕设",
@@ -112,7 +117,8 @@ export const constantRoutes = [
       },
       {
         path: "rating-management",
-        component: () => import("@/views/GraduationProject/RatingManagement"),
+        component: () =>
+          import("../views/GraduationProject/RatingManagement/index.vue"),
         name: "RatingManagement",
         meta: { title: "评级管理" }
       }
@@ -124,7 +130,6 @@ export const constantRoutes = [
 
 const createRouter = () =>
   new Router({
-    // mode: 'history', // require service support
     scrollBehavior: () => ({ y: 0 }),
     routes: constantRoutes
   });
