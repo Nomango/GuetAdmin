@@ -3,8 +3,9 @@ const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const defaultSettings = require("./src/settings.js");
 
+const root = process.cwd();
 function resolve(dir) {
-  return path.join(__dirname, dir);
+  return path.join(root, dir);
 }
 
 const name = defaultSettings.title || "guet Admin";

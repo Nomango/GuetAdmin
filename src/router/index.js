@@ -1,10 +1,10 @@
 import Vue from "vue";
-import Router from "vue-router";
+import VueRouter from "vue-router";
 
 /* Layout */
 import Layout from "@/layout";
 
-Vue.use(Router);
+Vue.use(VueRouter);
 
 /**
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -26,13 +26,13 @@ Vue.use(Router);
 export const constantRoutes = [
   {
     path: "/login",
-    component: () => import("../views/Login/index.vue"),
+    component: () => import("@/views/Login"),
     hidden: true
   },
 
   {
     path: "/404",
-    component: () => import("../views/404.vue"),
+    component: () => import("@/views/404"),
     hidden: true
   },
 
@@ -43,7 +43,7 @@ export const constantRoutes = [
     children: [
       {
         path: "home",
-        component: () => import("../views/Home/index.vue"),
+        component: () => import("@/views/Home"),
         name: "Home",
         meta: { title: "概览", icon: "dashboard", affix: true }
       }
@@ -60,15 +60,13 @@ export const constantRoutes = [
       {
         path: "college-list",
         name: "CollegeList",
-        component: () =>
-          import("../views/CollegeManagement/CollegeList/index.vue"),
+        component: () => import("@/views/CollegeManagement/CollegeList"),
         meta: { title: "学院列表" }
       },
       {
         path: "mentor-list",
         name: "MentorList",
-        component: () =>
-          import("../views/CollegeManagement/MentorList/index.vue"),
+        component: () => import("@/views/CollegeManagement/MentorList"),
         meta: { title: "导师列表" }
       }
     ]
@@ -86,15 +84,13 @@ export const constantRoutes = [
     children: [
       {
         path: "list",
-        component: () =>
-          import("../views/GraduationProject/ProjectList/index.vue"),
+        component: () => import("@/views/GraduationProject/ProjectList/index"),
         name: "ProjectList",
         meta: { title: "毕设列表" }
       },
       {
         path: "create",
-        component: () =>
-          import("../views/GraduationProject/ProjectList/create.vue"),
+        component: () => import("@/views/GraduationProject/ProjectList/create"),
         name: "CreateProject",
         meta: {
           title: "创建毕设",
@@ -105,8 +101,7 @@ export const constantRoutes = [
       },
       {
         path: "edit/:id(\\d+)",
-        component: () =>
-          import("../views/GraduationProject/ProjectList/edit.vue"),
+        component: () => import("@/views/GraduationProject/ProjectList/edit"),
         name: "EditProject",
         meta: {
           title: "编辑毕设",
@@ -117,8 +112,7 @@ export const constantRoutes = [
       },
       {
         path: "rating-management",
-        component: () =>
-          import("../views/GraduationProject/RatingManagement/index.vue"),
+        component: () => import("@/views/GraduationProject/RatingManagement"),
         name: "RatingManagement",
         meta: { title: "评级管理" }
       }
@@ -128,17 +122,9 @@ export const constantRoutes = [
   { path: "*", redirect: "/404", hidden: true }
 ];
 
-const createRouter = () =>
-  new Router({
-    scrollBehavior: () => ({ y: 0 }),
-    routes: constantRoutes
-  });
-
-const router = createRouter();
-
-export function resetRouter() {
-  const newRouter = createRouter();
-  router.matcher = newRouter.matcher;
-}
+const router = new VueRouter({
+  routes: constantRoutes,
+  scrollBehavior: (to, from, savedPosition) => ({ y: 0 })
+});
 
 export default router;
