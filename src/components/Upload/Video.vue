@@ -18,17 +18,23 @@
         :headers="headers"
         :http-request="uploadVideoFile"
       >
-        <video v-if="videoForm.showVideoPath !='' && !videoFlag"
-               v-bind:src="videoForm.showVideoPath"
-               controls="controls">
+        <video
+          v-if="videoForm.showVideoPath != '' && !videoFlag"
+          v-bind:src="videoForm.showVideoPath"
+          controls="controls"
+        >
           您的浏览器不支持视频播放
         </video>
-        <i v-else-if="videoForm.showVideoPath =='' && !videoFlag"
-           class="el-icon-plus"></i>
-        <el-progress v-if="videoFlag == true"
-                     type="circle"
-                     v-bind:percentage="videoUploadPercent"
-                     style="margin-top:7px;">
+        <i
+          v-else-if="videoForm.showVideoPath == '' && !videoFlag"
+          class="el-icon-plus"
+        ></i>
+        <el-progress
+          v-if="videoFlag == true"
+          type="circle"
+          v-bind:percentage="videoUploadPercent"
+          style="margin-top:7px;"
+        >
         </el-progress>
         <!-- <i class="el-icon-upload"></i> -->
         <!-- <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -48,8 +54,8 @@
 // OSS相关文档
 // https://help.aliyun.com/document_detail/64047.html?spm=a2c4g.11186623.6.1227.4b0426fdpDkw93
 
-import { OSS } from 'ali-oss';
-import { getSTSToken } from '@/api/AssumeRole'
+import { OSS } from "ali-oss";
+import { getSTSToken } from "@/api/AssumeRole";
 
 export default {
   name: "EditorSlideUpload",
@@ -80,50 +86,52 @@ export default {
       OSSClient: null,
 
       videoFlag: false,
-      //是否显示进度条
+      // 是否显示进度条
       videoUploadPercent: "",
-      //进度条的进度，
+      // 进度条的进度，
       isShowUploadVideo: false,
-      //显示上传按钮
+      // 显示上传按钮
       videoForm: {
-          showVideoPath: ''
+        showVideoPath: ""
       }
     };
   },
   created() {
-    this.getOSSClient()
+    this.getOSSClient();
   },
   methods: {
-    getOSSClient() {
-      const res = await getSTSToken({})
+    async getOSSClient() {
+      const res = await getSTSToken({});
+      const { data } = res;
+
       this.OSSClient = new OSS({
-          // yourRegion填写Bucket所在地域。以华东1（杭州）为例，Region填写为oss-cn-hangzhou。
-          region: 'oss-cn-shenzhen',
-          // 从STS服务获取的临时访问密钥（AccessKey ID和AccessKey Secret）。
-          accessKeyId: res.AccessKeyId,
-          accessKeySecret: res.AccessKeySecret,
-          // 从STS服务获取的安全令牌（SecurityToken）。
-          stsToken: res.SecurityToken,
-          // 填写Bucket名称。
-          bucket: 'guetshow'
+        // yourRegion填写Bucket所在地域。以华东1（杭州）为例，Region填写为oss-cn-hangzhou。
+        region: "oss-cn-shenzhen",
+        // 从STS服务获取的临时访问密钥（AccessKey ID和AccessKey Secret）。
+        accessKeyId: data.AccessKeyId,
+        accessKeySecret: data.AccessKeySecret,
+        // 从STS服务获取的安全令牌（SecurityToken）。
+        stsToken: data.SecurityToken,
+        // 填写Bucket名称。
+        bucket: "guetshow"
       });
     },
 
     uploadVideoFile(params) {
-      const file = params.file,
-            filename = file.filename;
+      const file = params.file;
+      let filename = file.filename;
 
       // 最好可以按work_id分开上传路径，也就是 /videos/:work_id/xxx.mp4
       // 但是不知道怎么把work_id传过来
       // 如果不好传work_id，可以随机产生一个文件名，防止名称冲突（记得带文件后缀）
-      filename = "videos/" + filename
-      this.multipartUpload(filename, file)
+      filename = "videos/" + filename;
+      this.multipartUpload(filename, file);
     },
 
     async putObject(filename, data) {
       // 上传单个文件
       try {
-        let result = await this.OSSClient.put(filename, data);
+        const result = await this.OSSClient.put(filename, data);
         console.log(result);
       } catch (e) {
         // TODO 处理一下异常
@@ -139,25 +147,29 @@ export default {
       // 填写本地文件的完整路径。如果未指定本地路径，则默认从示例程序所属项目对应本地路径中上传文件。
       // const data = 'D:\\localpath\\examplefile.txt';
       // 填写上传的内容。
-      //const data = ;
+      // const data = ;
       // 填写上传的内容。
-      //const data = new OSS.Buffer('Hello OSS');
+      // const data = new OSS.Buffer('Hello OSS');
 
       try {
         // TODO 不确定这里的Blob用的对不对
-        let result = await client.multipartUpload(filename, new Blob(data), { 
-          progress: function (percentage, checkpoint) {
-            this.videoFlag = true;
-            // TODO 不确定这里的percentage是什么
-            console.log(percentage);
-            this.videoUploadPercent = percentage.toFixed(0) * 1;
-          },
-          meta: { year: 2020, people: 'test' },
-          mime: 'text/plain'
-        })
+        const result = await this.OSSClient.multipartUpload(
+          filename,
+          new Blob(data),
+          {
+            progress: function(percentage, checkpoint) {
+              this.videoFlag = true;
+              // TODO 不确定这里的percentage是什么
+              console.log(percentage);
+              this.videoUploadPercent = percentage.toFixed(0) * 1;
+            },
+            meta: { year: 2020, people: "test" },
+            mime: "text/plain"
+          }
+        );
         // TODO 不清楚result是什么，应该有对象的url吧
         console.log(result);
-      } catch(e){
+      } catch (e) {
         // TODO 处理一下异常
         this.$message.error(e);
         console.log(e);
@@ -165,28 +177,38 @@ export default {
     },
 
     handleVideoSuccess(res, file) {
-        this.isShowUploadVideo = true;
-        this.videoFlag = false;
-        this.videoUploadPercent = 0;
+      this.isShowUploadVideo = true;
+      this.videoFlag = false;
+      this.videoUploadPercent = 0;
 
-        if (file.status == 'success' ) {
-            // TODO 这里的文件路径应该是从上传的result拿到，但是不知道result是什么
-            // 也可以用后端的 /api/upload/prefix 拿到video文件地址前缀，然后拼起来得到完整url
-            this.videoForm.showVideoPath = file.url;
-        } else {
-          this.$message.error("上传失败，请重新上传");
-        }
+      if (file.status === "success") {
+        // TODO 这里的文件路径应该是从上传的result拿到，但是不知道result是什么
+        // 也可以用后端的 /api/upload/prefix 拿到video文件地址前缀，然后拼起来得到完整url
+        this.videoForm.showVideoPath = file.url;
+      } else {
+        this.$message.error("上传失败，请重新上传");
+      }
     },
 
     beforeUploadVideo(file) {
       const isLt500M = file.size / 1024 / 1024 < 500;
-      if (['video/mp4', 'video/ogg', 'video/flv', 'video/avi', 'video/wmv', 'video/rmvb', 'video/mov'].indexOf(file.type) == -1) {
-          this.$message.warning("请上传正确的视频格式")
-          return false;
+      if (
+        [
+          "video/mp4",
+          "video/ogg",
+          "video/flv",
+          "video/avi",
+          "video/wmv",
+          "video/rmvb",
+          "video/mov"
+        ].indexOf(file.type) === -1
+      ) {
+        this.$message.warning("请上传正确的视频格式");
+        return false;
       }
       if (!isLt500M) {
-          this.$message.warning("视频大小不能超过500MB")
-          return false;
+        this.$message.warning("视频大小不能超过500MB");
+        return false;
       }
       this.isShowUploadVideo = false;
     }
