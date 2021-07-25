@@ -149,7 +149,7 @@ export default {
       levelOptions: [
         { label: '一等奖', value: 1 },
         { label: '二等奖', value: 2 },
-        { label: '三等奖', value: 3 },
+        { label: '三等奖', value: 3 }
       ],
       collegeOptions: [],
       tableData: []
@@ -164,9 +164,9 @@ export default {
   methods: {
     getLevelLabel(level) {
       switch (level) {
-      case 1: return '一等奖';
-      case 2: return '二等奖';
-      case 3: return '三等奖';
+        case 1: return '一等奖';
+        case 2: return '二等奖';
+        case 3: return '三等奖';
       }
       return '无';
     },

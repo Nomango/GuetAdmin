@@ -360,11 +360,13 @@ export default {
               });
               this.publishLoading = false;
 
-              this.$nextTick(() => {
-                this.$router.replace({
-                  name: "GraduationManagement"
+              if (!this.isEdit) {
+                this.$nextTick(() => {
+                  this.$router.replace({
+                    name: "GraduationManagement"
+                  });
                 });
-              });
+              }
             }
           });
         }

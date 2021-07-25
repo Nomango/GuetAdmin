@@ -9,7 +9,7 @@
     >
       上传视频
     </el-button>
-    <el-dialog :visible.sync="dialogVisible">
+    <el-dialog :visible.sync="dialogVisible" @close='closeDialog'>
       <el-upload
         drag
         :show-file-list="false"
@@ -18,6 +18,7 @@
         action=""
         :headers="headers"
         :http-request="uploadVideoFile"
+        :multiple="false"
       >
         <i v-if="!videoFlag && !uploadSuccess" class="el-icon-upload"></i>
         <div v-if="!videoFlag && !uploadSuccess" class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -132,10 +133,7 @@ export default {
           filename,
           data,
           {
-            progress: function(percentage, checkpoint) {
-              this.videoFlag = true;
-              this.videoUploadPercent = percentage.toFixed(0) * 100;
-            }
+            progress: this.updateProgress
           }
         );
 
@@ -150,6 +148,11 @@ export default {
       }
     },
 
+    updateProgress(percentage, checkpoint) {
+      this.videoFlag = true;
+      this.videoUploadPercent = Math.floor(percentage * 10000) / 100;
+    },
+
     handleSubmit() {
       this.$emit("successCBK", this.videoForm.showVideoPath);
       this.videoForm.showVideoPath = "";
@@ -158,6 +161,10 @@ export default {
     },
 
     beforeUploadVideo(file) {
+      if (this.videoFlag) {
+        this.$message.warning("视频已经上传中，请勿重复操作");
+        return false;
+      }
       const isLt500M = file.size / 1024 / 1024 < 500;
       if (
         [
@@ -177,6 +184,10 @@ export default {
         this.$message.warning("视频大小不能超过500MB");
         return false;
       }
+    },
+
+    closeDialog() {
+      this.OSSClient.cancel();
     }
   }
 };
