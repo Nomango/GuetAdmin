@@ -443,7 +443,7 @@ export default {
         window.tinymce
           .get(editorEle.tinymceId)
           .insertContent(
-            `<video src="${videoPath}" controls="controls">复制链接播放视频：${videoPath}</video>`
+            `<video src="${videoPath}" controls="controls" controlsList="nodownload">复制链接播放视频：${videoPath}</video>`
           )
       }
     }
