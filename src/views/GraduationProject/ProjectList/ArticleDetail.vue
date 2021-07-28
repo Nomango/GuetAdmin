@@ -9,7 +9,8 @@
       <el-form-item label="毕设名称:" prop="name" label-width="85px">
         <el-input
           v-model="postForm.name"
-          maxlength="250"
+          maxlength="60"
+          show-word-limit
           placeholder="请输入毕设名称"
           class="article-form-input"
         />
@@ -20,6 +21,7 @@
           v-model="postForm.brief"
           :rows="1"
           maxlength="250"
+          show-word-limit
           type="textarea"
           class="article-form-textarea"
           autosize
@@ -33,6 +35,8 @@
           filterable
           clearable
           remote
+          allow-create
+          default-first-option
           class="article-form-select"
           placeholder="请输入/选择学院名称"
           :remote-method="handleRemoteMethod"
@@ -51,7 +55,8 @@
       <el-form-item label="专业:" prop="major" label-width="85px">
         <el-input
           v-model="postForm.major"
-          maxlength="32"
+          maxlength="15"
+          show-word-limit
           placeholder="请输入专业名称"
           class="article-form-input"
         />
@@ -60,7 +65,8 @@
       <el-form-item label="学生姓名:" prop="student_name" label-width="85px">
         <el-input
           v-model="postForm.student_name"
-          maxlength="32"
+          maxlength="15"
+          show-word-limit
           placeholder="请输入学生姓名"
           class="article-form-input"
         />
@@ -69,7 +75,8 @@
       <el-form-item label="学号:" label-width="85px">
         <el-input
           v-model="postForm.student_number"
-          maxlength="32"
+          maxlength="20"
+          show-word-limit
           placeholder="请输入学号"
           class="article-form-input"
         />
@@ -79,6 +86,7 @@
         <el-input
           v-model="postForm.connect"
           maxlength="32"
+          show-word-limit
           placeholder="请输入联系方式"
           class="article-form-input"
         />
@@ -90,6 +98,9 @@
           multiple
           clearable
           collapse-tags
+          allow-create
+          filterable
+          default-first-option
           placeholder="请选择导师"
           class="article-form-select"
         >
@@ -286,7 +297,7 @@ export default {
         this.teacherOptions = (teachers || []).map(item => {
           return {
             label: item.name,
-            value: item.id
+            value: item.name,
           };
         });
       }
@@ -309,6 +320,19 @@ export default {
       const res = await getWorkListById({ id });
       const resData = res.data || {};
 
+      const mentorRes = await getMentorList({
+        page: 0,
+        pageSize: 0
+      });
+
+      const { teachers } = mentorRes.data || {};
+      const newTeachers = (teachers || []).reduce(function(filtered, item) {
+        if ((resData.teachers || []).includes(item.id)) {
+          filtered.push(item.name);
+        }
+        return filtered;
+      }, []);
+
       this.postForm = Object.assign(
         {},
         {
@@ -318,7 +342,7 @@ export default {
           name: resData.name,
           brief: resData.brief,
           school: resData.school,
-          teachers: Array.isArray(resData.teachers) ? resData.teachers : [],
+          teachers: (newTeachers || []),
           student_name: resData.student && resData.student.name,
           student_number: resData.student && resData.student.number,
           major: resData.major,
