@@ -462,7 +462,7 @@ export default {
           window.tinymce
             .get(editorEle.tinymceId)
             .insertContent(
-              `<img class="wscnph" style="max-width: 100%;" src="${v.url}" >`
+              `<img class="wscnph" style="max-width: 100%;" src="${v.url}?x-oss-process=style/web_png" >`
             )
         );
       }
