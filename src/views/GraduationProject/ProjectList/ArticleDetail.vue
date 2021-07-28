@@ -130,7 +130,13 @@
       </el-form-item>
 
       <el-form-item label-width="85px" label="封面图:" prop="cover">
-        <Upload
+        <!-- <Upload
+          v-model="postForm.cover"
+          :action="action"
+          :headers="headers"
+          @onsuccess="handleSuccess"
+        /> -->
+        <Crop
           v-model="postForm.cover"
           :action="action"
           :headers="headers"
@@ -176,6 +182,7 @@
 <script>
 import Tinymce from "@/components/Tinymce";
 import Upload from "@/components/Upload";
+import Crop from "@/components/Upload/Crop";
 import EditorImage from "@/components/Upload/EditorImage";
 import EditorVideo from "@/components/Upload/Video.vue";
 import { getWorkListById, addWorkList, updateWorkList } from "@/api/graduate";
@@ -202,6 +209,7 @@ export default {
   components: {
     Tinymce,
     Upload,
+    Crop,
     EditorImage,
     EditorVideo
   },
