@@ -2040,7 +2040,7 @@ babel-plugin-polyfill-regenerator@^0.2.2:
   dependencies:
     "@babel/helper-define-polyfill-provider" "^0.2.2"
 
-babel-runtime@6.x, babel-runtime@^6.11.6:
+babel-runtime@6.x:
   version "6.26.0"
   resolved "https://registry.npm.taobao.org/babel-runtime/download/babel-runtime-6.26.0.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fbabel-runtime%2Fdownload%2Fbabel-runtime-6.26.0.tgz#965c7058668e82b55d7bfe04ff2337bc8b5647fe"
   integrity sha1-llxwWGaOgrVde/4E/yM3vItWR/4=
@@ -9347,6 +9347,11 @@ vue-count-to@^1.0.13:
   resolved "https://registry.npm.taobao.org/vue-count-to/download/vue-count-to-1.0.13.tgz#3e7573ea6e64c2b2972f64e0a2ab2e23c7590ff3"
   integrity sha1-PnVz6m5kwrKXL2TgoqsuI8dZD/M=
 
+vue-cropper@^0.5.6:
+  version "0.5.6"
+  resolved "https://registry.nlark.com/vue-cropper/download/vue-cropper-0.5.6.tgz#a38c98d402da1421bd5e7535e16b9723f103cafd"
+  integrity sha1-o4yY1ALaFCG9XnU14WuXI/EDyv0=
+
 vue-eslint-parser@^7.0.0:
   version "7.9.0"
   resolved "https://registry.nlark.com/vue-eslint-parser/download/vue-eslint-parser-7.9.0.tgz#5eeedc71f22ebc7b18b957d1ab171acf29a41e64"
@@ -9364,13 +9369,6 @@ vue-hot-reload-api@^2.3.0:
   version "2.3.4"
   resolved "https://registry.npm.taobao.org/vue-hot-reload-api/download/vue-hot-reload-api-2.3.4.tgz#532955cc1eb208a3d990b3a9f9a70574657e08f2"
   integrity sha1-UylVzB6yCKPZkLOp+acFdGV+CPI=
-
-vue-image-crop-upload@^3.0.3:
-  version "3.0.3"
-  resolved "http://bnpm.byted.org/vue-image-crop-upload/-/vue-image-crop-upload-3.0.3.tgz#0183cf8ebee30c08afba09a6fcb0a8fcd395e236"
-  integrity sha512-VeBsU0oI1hXeCvdpnu19DM/r3KTlI8SUXTxsHsU4MhDXR0ahRziiL9tf4FbILGx+gRVNZhGbl32yuM6TiaGNhA==
-  dependencies:
-    babel-runtime "^6.11.6"
 
 "vue-loader-v16@npm:vue-loader@^16.1.0":
   version "16.3.3"
