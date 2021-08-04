@@ -61,7 +61,6 @@
       :data="tableData"
       border
       style="width: 100%"
-      height="500"
     >
       <el-table-column
         prop="id"
