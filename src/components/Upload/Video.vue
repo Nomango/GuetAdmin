@@ -122,7 +122,7 @@ export default {
 
     uploadVideoFile(params) {
       const file = params.file;
-      const filename = "videos/" + this.getRandomString(24) + path.extname(file.name);
+      const filename = "raw_videos/" + this.getRandomString(24) + path.extname(file.name);
       this.multipartUpload(filename, file);
     },
 
